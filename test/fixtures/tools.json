@@ -1,0 +1,907 @@
+{
+  "tools": [
+    {
+      "name": "get_balances",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_product",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "update_product",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "oneLiner": {
+            "type": "string"
+          },
+          "description": {},
+          "problem": {},
+          "audience": {},
+          "differentiation": {},
+          "mission": {},
+          "vibe": {},
+          "voiceDos": {
+            "type": "array"
+          },
+          "voiceDonts": {
+            "type": "array"
+          },
+          "links": {
+            "type": "object"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "competitors": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    {
+      "name": "list_connected_accounts",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "connect_account",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "connectionId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "platform"
+        ]
+      }
+    },
+    {
+      "name": "disconnect_account",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "connectionId": {
+            "type": "string"
+          },
+          "platform": {
+            "type": "string"
+          },
+          "handle": {}
+        },
+        "required": [
+          "connectionId",
+          "platform",
+          "handle"
+        ]
+      }
+    },
+    {
+      "name": "get_for_you_draft",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "edit_for_you_draft",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string"
+          },
+          "changes": {},
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "draftId",
+          "changes"
+        ]
+      }
+    },
+    {
+      "name": "pass_draft",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "draftId"
+        ]
+      }
+    },
+    {
+      "name": "approve_draft",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string"
+          },
+          "exit": {
+            "type": "string"
+          },
+          "connectionIds": {
+            "type": "array"
+          },
+          "at": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "youtube": {
+            "type": "object"
+          },
+          "tiktok": {
+            "type": "array"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "draftId",
+          "exit"
+        ]
+      }
+    },
+    {
+      "name": "undo_approve",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "draftId"
+        ]
+      }
+    },
+    {
+      "name": "list_source_posts",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "format"
+        ]
+      }
+    },
+    {
+      "name": "list_starting_points",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "format"
+        ]
+      }
+    },
+    {
+      "name": "list_sounds",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "create_draft",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fromSourcePost": {
+            "type": "object"
+          },
+          "makeYourOwn": {}
+        }
+      }
+    },
+    {
+      "name": "edit_draft",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string"
+          },
+          "composition": {}
+        },
+        "required": [
+          "draftId",
+          "composition"
+        ]
+      }
+    },
+    {
+      "name": "rewrite_draft",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "draftId": {
+            "type": "string"
+          },
+          "steer": {
+            "type": "string"
+          },
+          "mention": {
+            "type": "boolean"
+          },
+          "previousIdeaId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "draftId"
+        ]
+      }
+    },
+    {
+      "name": "draft_caption",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "type": "string"
+          },
+          "platforms": {
+            "type": "array"
+          },
+          "avoid": {
+            "type": "string"
+          },
+          "attempt": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "format"
+        ]
+      }
+    },
+    {
+      "name": "generate_media",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "lengthSeconds": {
+            "type": "integer"
+          },
+          "startingImageId": {
+            "type": "string"
+          },
+          "expectedCredits": {
+            "type": "integer"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "prompt"
+        ]
+      }
+    },
+    {
+      "name": "list_saved_posts",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    {
+      "name": "get_post",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "postId"
+        ]
+      }
+    },
+    {
+      "name": "publish_saved_post",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string"
+          },
+          "exit": {
+            "type": "string"
+          },
+          "connectionIds": {
+            "type": "array"
+          },
+          "at": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "youtube": {
+            "type": "object"
+          },
+          "tiktok": {
+            "type": "array"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "postId",
+          "exit"
+        ]
+      }
+    },
+    {
+      "name": "edit_saved_post",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string"
+          },
+          "post": {},
+          "saveAsNew": {
+            "type": "boolean"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "postId",
+          "post"
+        ]
+      }
+    },
+    {
+      "name": "delete_saved_post",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "postId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "postId"
+        ]
+      }
+    },
+    {
+      "name": "list_media",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    {
+      "name": "upload_media",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "step": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "rightsConfirmed": {
+            "type": "boolean"
+          },
+          "uploadId": {
+            "type": "string"
+          },
+          "durationSeconds": {
+            "type": "number"
+          },
+          "posterUploaded": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "step"
+        ]
+      }
+    },
+    {
+      "name": "update_media",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string"
+          },
+          "demo": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "mediaId",
+          "demo"
+        ]
+      }
+    },
+    {
+      "name": "delete_media",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mediaId"
+        ]
+      }
+    },
+    {
+      "name": "list_publish_runs",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "week": {
+            "type": "string"
+          },
+          "connectionId": {
+            "type": "string"
+          },
+          "cursor": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "timeZone"
+        ]
+      }
+    },
+    {
+      "name": "get_publish_run",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "publishRunId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publishRunId"
+        ]
+      }
+    },
+    {
+      "name": "move_publish_run",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "publishRunId": {
+            "type": "string"
+          },
+          "fromSlot": {},
+          "at": {},
+          "toDay": {
+            "type": "string"
+          },
+          "toTime": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publishRunId",
+          "fromSlot"
+        ]
+      }
+    },
+    {
+      "name": "cancel_publish_run",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "publishRunId": {
+            "type": "string"
+          },
+          "slot": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publishRunId",
+          "slot"
+        ]
+      }
+    },
+    {
+      "name": "retry_publish_run",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "publishRunId": {
+            "type": "string"
+          },
+          "fromSlot": {},
+          "at": {},
+          "toDay": {
+            "type": "string"
+          },
+          "toTime": {
+            "type": "string"
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "publishRunId",
+          "fromSlot"
+        ]
+      }
+    },
+    {
+      "name": "get_scoreboard",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "connectionId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "refresh_metrics",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "connectionIds": {
+            "type": "array"
+          },
+          "publishRunId": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "name": "list_watchlist",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "browse_watchlist",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "watchlistHandleId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "watchlistHandleId"
+        ]
+      }
+    },
+    {
+      "name": "watch_account",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "platform",
+          "handle"
+        ]
+      }
+    },
+    {
+      "name": "unwatch_account",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "watchlistHandleId": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "watchlistHandleId",
+          "handle"
+        ]
+      }
+    },
+    {
+      "name": "dismiss_suggested_account",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "suggestionId": {
+            "type": "string"
+          },
+          "handle": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "suggestionId",
+          "handle"
+        ]
+      }
+    }
+  ]
+}

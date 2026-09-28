@@ -1,0 +1,47 @@
+{
+  "name": "topped",
+  "version": "0.1.0",
+  "description": "The Topped CLI: let your coding agent run Topped, one JSON document per command.",
+  "license": "MIT",
+  "author": "Lior Cohen",
+  "homepage": "https://app.topped.ai",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/topped-ai/topped-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/topped-ai/topped-agent/issues"
+  },
+  "type": "module",
+  "bin": {
+    "topped": "dist/cli.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "topped",
+    "cli",
+    "agent",
+    "mcp",
+    "social",
+    "marketing"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && vitest run",
+    "check:history": "node scripts/check-history.mjs",
+    "prepublishOnly": "npm run typecheck && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

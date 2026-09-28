@@ -1,0 +1,13 @@
+{
+  "name": "topped",
+  "displayName": "Topped",
+  "version": "0.1.0",
+  "description": "Make, approve, schedule and measure your Product's TikTok, Instagram and YouTube Posts with Topped, from your coding agent.",
+  "author": {
+    "name": "Lior Cohen",
+    "url": "https://app.topped.ai"
+  },
+  "homepage": "https://app.topped.ai",
+  "license": "MIT",
+  "keywords": ["topped", "tiktok", "instagram", "youtube", "marketing", "social", "mcp", "cli"]
+}

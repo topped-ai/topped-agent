@@ -1,0 +1,17 @@
+{
+  "name": "topped-agent",
+  "description": "Topped's plugin for Claude Code: the topped skill, which teaches your agent to make, approve, schedule and measure your Posts.",
+  "owner": {
+    "name": "Topped",
+    "url": "https://app.topped.ai"
+  },
+  "plugins": [
+    {
+      "name": "topped",
+      "source": "./",
+      "description": "Make, approve, schedule and measure your Product's TikTok, Instagram and YouTube Posts with Topped, from your coding agent.",
+      "category": "marketing",
+      "tags": ["tiktok", "instagram", "youtube", "social", "marketing"]
+    }
+  ]
+}
