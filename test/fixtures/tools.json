@@ -53,9 +53,6 @@
           },
           "stage": {
             "type": "string"
-          },
-          "competitors": {
-            "type": "array"
           }
         }
       }

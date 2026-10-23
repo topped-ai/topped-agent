@@ -112,7 +112,7 @@ Signing up happens in the browser, at https://app.topped.ai; after that, everyth
 
 ### Set up from the repo
 
-1. Read the README, the store listing and the website. Draft the Product: `name`, `oneLiner`, `description`, `problem`, `audience`, `differentiation`, `vibe`, `voiceDos`, `voiceDonts`, `links` (`appStoreUrl`, `websiteUrl`), `stage` (`pre_launch` or `live`), and on a new account the `competitors` the founder names.
+1. Read the README, the store listing and the website. Draft the Product: `name`, `oneLiner`, `description`, `problem`, `audience`, `differentiation`, `vibe`, `voiceDos`, `voiceDonts`, `links` (`appStoreUrl`, `websiteUrl`), and `stage` (`pre_launch` or `live`).
 2. Show it to the founder and change what they say.
 3. `update_product` with only those fields, or `topped product update --json product.json`. On a new account, `name` and `oneLiner` set the Product up, and For You starts getting its first Drafts ready.
 4. Connect accounts: `connect_account { platform }` (`topped accounts connect tiktok`) returns a link the founder opens and signs in to themselves. You can't sign in for them.
