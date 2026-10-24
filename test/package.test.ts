@@ -54,6 +54,15 @@ describe("the package", () => {
     expect(readFileSync(join(root, "CHANGELOG.md"), "utf8")).toMatch(new RegExp(`^## ${pkg.version.replace(/\./g, "\\.")} \\(\\d{4}-\\d{2}-\\d{2}\\)$`, "m"));
   });
 
+  it("tells a 0.1.0 founder every input today's Topped refuses, and to update the CLI and the skill together", () => {
+    const changelog = readFileSync(join(root, "CHANGELOG.md"), "utf8");
+    const upgrade = /^### Upgrade from 0\.1\.0\n([\s\S]*?)\n### /m.exec(changelog)?.[1] ?? "";
+    for (const refused of ["upload_media", "topped scoreboard --account", "topped watchlist browse <watchlistHandleId>", "startingPointId", "`look`", "sameLookOnEverySlide"]) {
+      expect(upgrade).toContain(refused);
+    }
+    expect(upgrade).toContain("update the CLI and the skill together");
+  });
+
   it("prints the version package.json names", () => {
     expect(VERSION).toBe(pkg.version);
   });

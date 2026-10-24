@@ -144,7 +144,7 @@ Signing up happens in the browser, at https://app.topped.ai; after that, everyth
 1. Ask for the price: `generate_media { kind, prompt, model }` without `expectedCredits` (`topped generate image --prompt "a phone on a desk at night"`). Nothing is made; the result has the `price` and both `balances`. The `model` field in `topped tools` lists every model with its price; left out, a default model is used.
 2. Tell the founder the price in Credits and what is left. On their yes: the same call with `expectedCredits` (`--expected-credits <price>`).
 3. An image lands in the Library at once, with its `mediaId`, ready for a slide's `photo`, an image over a slide (`images`), a Slideshow's `startingPoint`, or a video's `startingImageId`.
-4. A video finishes in the background. A few minutes later, `list_media { mediaId }` (`topped media --media-id <mediaId>`) says `making` (check again in a minute), `failed` (its credits come back; a new one is a new price), or lists it once it's ready: then it can be a Wall of text's Starting point or a Demo video's Opener. `in_playground` means it was made but never reached the Library: tell the founder it's in their Playground, and never check again.
+4. A video finishes in the background. A few minutes later, `list_media { mediaId }` (`topped media --media-id <mediaId>`) says `making` (check again in a minute), `failed` (tell the founder its `message`; the `balances` beside it show where the credits stand; a new one is a new price), or lists it once it's ready: then it can be a Wall of text's Starting point or a Demo video's Opener. `in_playground` means it was made but never reached the Library: tell the founder it's in their Playground, and never check again.
 
 ### Remove an image or clip, and put it back
 

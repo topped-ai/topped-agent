@@ -20,9 +20,10 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
   - `watchlist browse` takes `--creators <a,b>` (watchlistHandleIds, up to 40), or none for every watched Creator, and pages with `--cursor`.
   - `media --media-id <mediaId>` reads one item, or a video `generate` started. Topped refuses it beside `--kind`, `--cursor` or `--limit`; the CLI sends what it is given and passes that refusal through.
   - `starting-points --photo-set <startingPointId>` lists every photo of one set; `--source yours` lists the founder's own Library images or clips instead of Topped's.
-  - `media delete` answers with an `undoToken`; `media restore <mediaId> --undo-token <token>` puts the item back.
+  - `media delete` answers with an `undoToken`.
   - `for-you edit` takes the `draftId` as an argument.
   - The confirmations Topped requires are flags: `accounts disconnect --platform --handle|--no-handle`, `watchlist unwatch|dismiss --handle`, `run move|retry --from-slot` and `run cancel --slot`. `accounts connect --reconnect <connectionId>` reconnects.
+- **Where the CLI departs from the spec by choice.** `media restore <mediaId> --undo-token <token>`, not the spec's positional `<undoToken>`: the token is a flag, like the other values Topped requires to confirm a change (`--from-slot`, `--slot`, `--handle`).
 - **What the CLI adds to Topped's answers:**
   - the `requestId` it sent, as a top-level `requestId` on the result or refusal;
   - `source` and `url` on `whoami`;

@@ -7,6 +7,7 @@ Brought in line with the 42 tools Topped lists today.
 ### Upgrade from 0.1.0
 
 - Today's Topped refuses clip and Demo uploads from 0.1.0: `upload_media` begin now needs the clip's length, which 0.1.0 sent only with finish. Upgrade to upload clips and Demos.
+- Today's Topped also refuses 0.1.0's `topped scoreboard --account <connectionId>`, `topped watchlist browse <watchlistHandleId>`, and the Post names the 0.1.0 skill taught (a top-level `startingPointId`, `look` and `sameLookOnEverySlide`). The skill installs apart from the CLI, so update the CLI and the skill together.
 
 ### New commands
 

@@ -305,6 +305,13 @@ describe("what the skill names is real", () => {
     expect(body).toContain("topped media --media-id <mediaId>");
   });
 
+  it("reports a failed video's message and balances, and never promises its credits back", () => {
+    const step = body.split("\n").find((line) => line.startsWith("4. A video finishes in the background."));
+    expect(step).toBeDefined();
+    expect(step).toMatch(/`failed` \(tell the founder its `message`; the `balances` beside it show where the credits stand/);
+    expect(body).not.toMatch(/credits (come|comes|came) back|refund/i);
+  });
+
   it("writes --platform-json files with only tiktok and youtube", () => {
     const platform = codeTexts().filter((code) => code.includes('"tiktok"'));
     expect(platform).toHaveLength(1);
