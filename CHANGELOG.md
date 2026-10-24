@@ -9,7 +9,7 @@
 
 ### Listings
 
-- `server.json`: Topped's remote MCP server for the official MCP registry, at this version.
+- `server.json`: Topped's remote MCP server for the official MCP registry, at the remote server's own version (1.0.0), not the CLI's.
 - `docs/hermes/optional-mcps/topped/manifest.yaml`: the entry for Hermes's curated MCP list.
 
 ## 0.2.0 (2026-10-24)

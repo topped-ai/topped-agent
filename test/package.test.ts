@@ -83,13 +83,16 @@ describe("the package", () => {
 describe("the MCP registry entry", () => {
   const server = JSON.parse(readFileSync(join(root, "server.json"), "utf8"));
 
-  it("lists Topped's remote server at the package's version, with no package to install", () => {
+  it("lists Topped's remote server at the server's own version, with no package and no source repository", () => {
     expect(server.$schema).toBe("https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json");
     expect(server.name).toBe("ai.topped/topped");
     expect(server.title).toBe("Topped");
-    expect(server.version).toBe(pkg.version);
+    // The version the remote server reports as its serverInfo, not the CLI's.
+    expect(server.version).toBe("1.0.0");
+    expect(server.version).not.toBe(pkg.version);
     expect(server.websiteUrl).toBe("https://app.topped.ai");
-    expect(server.repository).toEqual({ url: "https://github.com/topped-ai/topped-agent", source: "github" });
+    // This repository holds the client and the skill, not the server's source.
+    expect(server.repository).toBeUndefined();
     expect(server.remotes).toEqual([{ type: "streamable-http", url: "https://app.topped.ai/api/mcp" }]);
     expect(server.packages).toBeUndefined();
   });

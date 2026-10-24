@@ -61,6 +61,8 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
 
 ## Listings
 
-- **`server.json` lists Topped's remote MCP server in the official MCP registry,** as `ai.topped/topped` with one `streamable-http` remote and no package: the server runs in Topped, so there is nothing to install. Its `version` follows `package.json`.
+- **`server.json` lists Topped's remote MCP server in the official MCP registry,** as `ai.topped/topped` with one `streamable-http` remote and no package: the server runs in Topped, so there is nothing to install.
+  - **Its `version` is the remote server's own**, the `serverInfo.version` Topped's server reports when a client connects (1.0.0 today), not the CLI's. The registry defines it that way, and a published registry version can never change: following the CLI would publish a new registry version for every CLI release and none when the server's tools change. When Topped's server changes its version, `server.json` follows it.
+  - **It names no `repository`.** The registry means the server's source code, and this repository holds only the client and the skill; the server's source is not public.
 - **`docs/hermes/optional-mcps/topped/manifest.yaml` is the entry for Hermes's curated MCP list,** ready to copy into a pull request there under the same path. It follows that list's shape: an `http` transport and native `oauth`, every tool checked at install.
 - Every setup the README and the skill give (Claude Code, Hermes, Grok, chat apps) reaches the same address, `https://app.topped.ai/api/mcp`, with "Log in with Topped" or a key.

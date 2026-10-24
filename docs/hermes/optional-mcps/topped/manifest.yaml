@@ -38,8 +38,9 @@ post_install: |
   On first connection, Hermes will open a browser at "Log in with Topped".
   Click Allow, then restart your Hermes session so the Topped tools are loaded.
 
-  Making a Playground image or video spends Credits, and approving a Post
-  spends one content save: the agent states the price first.
+  Making a Playground image or video spends Credits; Topped returns the
+  price first. Approving a Post spends one content save. Say yes only to
+  what you mean to spend.
 
   You can re-run the tool checklist any time with:
     hermes mcp configure topped
