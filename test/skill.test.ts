@@ -283,6 +283,17 @@ describe("what the skill names is real", () => {
     }
   });
 
+  it("states the Slideshow slide cap the live schema has, for every platform alike", () => {
+    type Shape = { properties: { format: { const?: string }; slides?: { maxItems?: number } } };
+    const { makeYourOwn } = LIVE_INPUT_SCHEMAS.get("create_draft")!.properties as { makeYourOwn: { oneOf: Shape[] } };
+    const cap = makeYourOwn.oneOf.find((shape) => shape.properties.format.const === "slideshow")?.properties.slides?.maxItems;
+    expect(typeof cap).toBe("number");
+    const stated = [...body.matchAll(/up to (\d+) slides/g)].map((match) => Number(match[1]));
+    expect(stated).toEqual([cap]);
+    expect(body).toContain(`A Slideshow has up to ${cap} slides`);
+    expect(body).not.toMatch(/slide limit/i);
+  });
+
   it("starts every Post of your own on a startingPoint: Topped's by startingPointId, or the founder's Library media by mediaId", () => {
     const fenced = [...body.matchAll(/```json\n([\s\S]*?)```/g)].map((match) => match[1]!);
     const posts = fenced

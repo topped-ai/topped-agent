@@ -30,3 +30,4 @@ Brought in line with the 42 tools Topped lists today.
 - Posts start from your own Library media: `startingPoint` is `{ "startingPointId" }` or `{ "mediaId" }`.
 - The editor's names: `behindTheWords` (`white`, `none`, `snapchat`), outline width `none`, `images` with `opacity` (they were stickers), `allTextBoxes` with `didNotFit`, `volumes.sound` and `volumes.demoSound`, and a slide photo from any set as `{ "photoSetId", "photo" }`.
 - Restore after a delete; never check again on a video that is `in_playground`; Scoreboard per Post; the Product's logo.
+- A Slideshow has up to 10 slides, wherever it posts (Instagram's carousel limit), not 20.

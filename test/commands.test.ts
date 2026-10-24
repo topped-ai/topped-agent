@@ -72,9 +72,41 @@ const OWN_SLIDESHOW = {
   allTextBoxes: true,
 };
 
+/** A Wall of text: `draft edit` sends it as edit_draft's composition, `saved edit` as edit_saved_post's post. */
+const WALL_OF_TEXT = { format: "wall_of_text", startingPoint: { startingPointId: A }, text: { words: "Hello" } };
+
+/** New words on a For You Draft's slide 1: `for-you edit` sends it as edit_for_you_draft's changes. */
+const FOR_YOU_CHANGES = { format: "slideshow", slides: [{ slide: 1, words: "Hi" }] };
+
+/** `--platform-json` files: TikTok and YouTube together, and YouTube with a privacy and no title. */
+const PLATFORM = { tiktok: [{ connectionId: A, sendToDrafts: true }], youtube: { title: "T", privacy: "public" } };
+const YOUTUBE_ONLY = { youtube: { privacy: "unlisted" } };
+
 describe("the Posts these tests send", () => {
-  it("fit Topped's whole live input schema, nested fields included", () => {
-    expect(schemaErrors({ makeYourOwn: OWN_SLIDESHOW }, LIVE_INPUT_SCHEMAS.get("create_draft")!)).toEqual([]);
+  const schema = (tool: string) => LIVE_INPUT_SCHEMAS.get(tool)!;
+
+  // edit_draft's composition and edit_saved_post's post are the same Post shape as create_draft's makeYourOwn.
+  it.each([
+    ["your own Slideshow", OWN_SLIDESHOW],
+    ["a Wall of text", WALL_OF_TEXT],
+  ])("%s fits Topped's whole live Post schema, nested fields included", (_name, post) => {
+    expect(schemaErrors({ makeYourOwn: post }, schema("create_draft"))).toEqual([]);
+  });
+
+  it("the For You changes fit edit_for_you_draft's whole live input schema", () => {
+    expect(schemaErrors({ draftId: A, changes: FOR_YOU_CHANGES }, schema("edit_for_you_draft"))).toEqual([]);
+  });
+
+  it.each([
+    ["TikTok and YouTube", PLATFORM],
+    ["YouTube alone", YOUTUBE_ONLY],
+  ])("the %s --platform-json file fits approve_draft's whole live input schema", (_name, platform) => {
+    const input = { draftId: A, exit: "post_now", connectionIds: [A, B], caption: "New!", ...platform };
+    expect(schemaErrors(input, schema("approve_draft"))).toEqual([]);
+  });
+
+  it("would catch a Wall of text in the shape these tests used to send", () => {
+    expect(schemaErrors({ makeYourOwn: { format: "wall_of_text", text: "Hello" } }, schema("create_draft"))).not.toEqual([]);
   });
 });
 
@@ -132,15 +164,12 @@ describe("each command runs its one tool with the input its flags name", () => {
     await fake.start();
     files = await mkdtemp(join(tmpdir(), "topped-cli-files-"));
     await writeFile(join(files, "profile.json"), JSON.stringify({ name: "Nightowl", oneLiner: "Sleep better." }));
-    await writeFile(join(files, "changes.json"), JSON.stringify({ format: "slideshow", slides: [{ slide: 1, words: "Hi" }] }));
+    await writeFile(join(files, "changes.json"), JSON.stringify(FOR_YOU_CHANGES));
     await writeFile(join(files, "spec.json"), JSON.stringify({ fromSourcePost: { sourcePostId: A } }));
-    await writeFile(join(files, "composition.json"), JSON.stringify({ format: "wall_of_text", text: "Hello" }));
+    await writeFile(join(files, "composition.json"), JSON.stringify(WALL_OF_TEXT));
     await writeFile(join(files, "own.json"), JSON.stringify({ makeYourOwn: OWN_SLIDESHOW }));
-    await writeFile(join(files, "youtube.json"), JSON.stringify({ youtube: { privacy: "unlisted" } }));
-    await writeFile(
-      join(files, "platform.json"),
-      JSON.stringify({ tiktok: [{ connectionId: A, sendToDrafts: true }], youtube: { title: "T", privacy: "public" } }),
-    );
+    await writeFile(join(files, "youtube.json"), JSON.stringify(YOUTUBE_ONLY));
+    await writeFile(join(files, "platform.json"), JSON.stringify(PLATFORM));
   });
   afterAll(async () => {
     await fake.stop();
@@ -178,7 +207,7 @@ describe("each command runs its one tool with the input its flags name", () => {
       "for-you edit",
       ["for-you", "edit", A, "--json", "changes.json"],
       "edit_for_you_draft",
-      { draftId: A, changes: { format: "slideshow", slides: [{ slide: 1, words: "Hi" }] } },
+      { draftId: A, changes: FOR_YOU_CHANGES },
     ],
     ["pass", ["pass", A], "pass_draft", { draftId: A }],
     ["approve --save", ["approve", A, "--save"], "approve_draft", { draftId: A, exit: "save" }],
@@ -241,7 +270,7 @@ describe("each command runs its one tool with the input its flags name", () => {
       "draft edit",
       ["draft", "edit", A, "--json", "composition.json"],
       "edit_draft",
-      { draftId: A, composition: { format: "wall_of_text", text: "Hello" } },
+      { draftId: A, composition: WALL_OF_TEXT },
     ],
     ["draft rewrite", ["draft", "rewrite", A], "rewrite_draft", { draftId: A }],
     [
@@ -282,7 +311,7 @@ describe("each command runs its one tool with the input its flags name", () => {
       "saved edit",
       ["saved", "edit", A, "--json", "composition.json", "--save-as-new"],
       "edit_saved_post",
-      { postId: A, post: { format: "wall_of_text", text: "Hello" }, saveAsNew: true },
+      { postId: A, post: WALL_OF_TEXT, saveAsNew: true },
     ],
     ["saved delete", ["saved", "delete", A], "delete_saved_post", { postId: A }],
     ["media", ["media"], "list_media", {}],

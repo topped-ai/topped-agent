@@ -20,7 +20,7 @@
                   },
                   "slides": {
                     "minItems": 1,
-                    "maxItems": 20,
+                    "maxItems": 10,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -28,7 +28,7 @@
                         "slide": {
                           "type": "integer",
                           "minimum": 1,
-                          "maximum": 20
+                          "maximum": 10
                         },
                         "words": {
                           "anyOf": [
@@ -630,7 +630,7 @@
                   },
                   "slides": {
                     "minItems": 1,
-                    "maxItems": 20,
+                    "maxItems": 10,
                     "type": "array",
                     "items": {
                       "type": "object",
@@ -638,7 +638,7 @@
                         "slide": {
                           "type": "integer",
                           "minimum": 1,
-                          "maximum": 20
+                          "maximum": 10
                         },
                         "words": {
                           "anyOf": [

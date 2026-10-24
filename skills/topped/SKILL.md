@@ -215,11 +215,10 @@ New words on the current For You Draft's slides 1 and 3, keeping slide 2 (`edit_
 
 ## TikTok, YouTube and Instagram
 
-- `list_connected_accounts { postId }` (`topped accounts --post <postId>`) says what each account accepts for that Post: TikTok's privacy options, what it allows and its longest video; YouTube's fields; Instagram's slide limit.
+- `list_connected_accounts { postId }` (`topped accounts --post <postId>`) says what each account accepts for that Post: TikTok's privacy options, what it allows and its longest video; YouTube's fields.
 - **TikTok:** one entry per TikTok account in `tiktok`: its `connectionId`, then either `sendToDrafts: true`, or every choice as the founder made it: `privacy`, `allowComments`, `yourBrand`, `brandedContent` (branded content can't be private) and `aiGenerated`; for a video also `allowDuet` and `allowStitch`; for a slideshow also `autoAddMusic`. A choice TikTok doesn't offer for that kind of Post is refused, and so is a missing one: the `fix` names it. Ask the founder, then send it again.
 - **YouTube:** videos only; `youtube: { privacy }` (`public`, `unlisted` or `private`) is required for every YouTube account in `connectionIds`. `title` (up to 100 characters) is optional: left out, it is the caption's first line, cut to fit. `aiGenerated` is YouTube's AI-generated label, on when left out. The caption is the video's description.
 - **Accounts:** one approval or publish goes to up to 25 accounts.
-- **Instagram:** a slideshow has up to 10 slides.
 - CLI: both go in one file for `--platform-json`, and nothing else. For a video on TikTok and YouTube:
 
 ```json
@@ -243,7 +242,7 @@ Fill every value from the founder's answers; the values above only show the shap
 - **A Draft you make lives 7 days.** If it's never approved, it's removed. It never appears in the app.
 - **Rendering takes a moment.** Call `get_post` again while `pictures` is `rendering`. `failed` means only a new edit renders it again. `get_post` never reads a For You Draft: use `get_for_you_draft` for that.
 - **Topped's writer rests.** It gets 20 rewrites, one more every 3 minutes. When it's resting, the refusal says when it's back; write the words yourself meanwhile.
-- **Formats.** A Slideshow has up to 20 slides and never a Sound. Wall of text is one line of up to 200 characters over a moving background (Topped's, or a clip of the founder's), with a Sound. A Demo video is an Opener, then the founder's Demo, with a Sound. For You edits never change the Starting point, Opener or Demo; `edit_draft` can. A Draft whose own Library Starting point was removed can't be edited: approve it as it is, or make another.
+- **Formats.** A Slideshow has up to 10 slides (Instagram's carousel limit) and never a Sound. Wall of text is one line of up to 200 characters over a moving background (Topped's, or a clip of the founder's), with a Sound. A Demo video is an Opener, then the founder's Demo, with a Sound. For You edits never change the Starting point, Opener or Demo; `edit_draft` can. A Draft whose own Library Starting point was removed can't be edited: approve it as it is, or make another.
 - **Words that run long** grow their text box; only words past the whole safe area are refused, and the `fix` says what to shorten.
 - **Captions** from `draft_caption` are Plus and Pro only. On other plans, write the caption yourself (up to 2,200 characters, one per Post going out).
 - **Sounds** the founder uploads need their confirmation that they have the rights to use them wherever they publish: `topped upload song.mp3 --title "..." --rights-confirmed` only after they say so.
