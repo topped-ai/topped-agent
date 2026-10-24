@@ -1,11 +1,13 @@
-# Nous-approved MCP catalog entry.
-# Presence in this directory = approval. Merged via PR review.
+# Topped's entry for Hermes's curated MCP list: copy this file into a pull
+# request to NousResearch/hermes-agent at optional-mcps/topped/manifest.yaml.
+# The list's approval line belongs there, once that pull request is merged.
 manifest_version: 1
 
 name: topped
 connector_slug: topped
 description: Make, approve, schedule and measure your Product's TikTok, Instagram and YouTube Posts.
-source: https://github.com/topped-ai/topped-agent
+# Where to read about the server, not its code: the server's source is not public.
+source: https://github.com/topped-ai/topped-agent#hermes
 
 # Topped runs a remote MCP server over Streamable HTTP with native OAuth 2.1
 # ("Log in with Topped"): discovery, Dynamic Client Registration and PKCE

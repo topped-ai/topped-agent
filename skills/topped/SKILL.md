@@ -33,7 +33,7 @@ Check first: `topped whoami` names the Product it acts on. Exit code 3 means not
 - **MCP in Claude Code:** the founder creates a key under **Settings > Connect your agent**, then runs:
   `claude mcp add --transport http topped https://app.topped.ai/api/mcp --header "Authorization: Bearer <your key>"`
   A key is shown once. Never write it into a file in the repo, and never print it.
-- **Hermes over MCP:** `hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth`, which is this in `~/.hermes/config.yaml`; Hermes opens the founder's browser at "Log in with Topped" on first connect, then the session needs a restart so the tools load:
+- **Hermes over MCP:** `hermes mcp add --url https://app.topped.ai/api/mcp --auth oauth topped`, which is this in `~/.hermes/config.yaml`; Hermes opens the founder's browser at "Log in with Topped" on first connect, then the session needs a restart so the tools load:
   ```yaml
   mcp_servers:
     topped:

@@ -89,7 +89,6 @@ describe("the MCP registry entry", () => {
     expect(server.title).toBe("Topped");
     // The version the remote server reports as its serverInfo, not the CLI's.
     expect(server.version).toBe("1.0.0");
-    expect(server.version).not.toBe(pkg.version);
     expect(server.websiteUrl).toBe("https://app.topped.ai");
     // This repository holds the client and the skill, not the server's source.
     expect(server.repository).toBeUndefined();

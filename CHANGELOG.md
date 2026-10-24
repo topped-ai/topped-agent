@@ -4,7 +4,7 @@
 
 ### Set up
 
-- Hermes: `hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth`, or the `~/.hermes/config.yaml` entry, with "Log in with Topped" or a key. In the README and the skill.
+- Hermes: `hermes mcp add --url https://app.topped.ai/api/mcp --auth oauth topped`, or the `~/.hermes/config.yaml` entry, with "Log in with Topped" or a key. In the README and the skill.
 - Grok: a custom connector on grok.com, the Grok Build CLI (`grok mcp add --transport http topped https://app.topped.ai/api/mcp`), or the xAI API's remote MCP tool. In the README and the skill.
 
 ### Listings

@@ -13,7 +13,7 @@ Pick the way your agent talks to Topped, then [add the skill](#the-skill).
 |---|---|
 | A coding agent in a terminal | `npm i -g topped && topped login` (below). Coding agents do best with the CLI: it costs nothing in the agent's context until a command runs. |
 | Claude Code, over MCP | Create a key in Topped under **Settings > Connect your agent**, then run `claude mcp add --transport http topped https://app.topped.ai/api/mcp --header "Authorization: Bearer <your key>"`. |
-| Hermes | `hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth`, or the config below. |
+| Hermes | `hermes mcp add --url https://app.topped.ai/api/mcp --auth oauth topped`, or the config below. |
 | Grok | A custom connector on grok.com, the Grok Build CLI, or the xAI API's remote MCP tool (below). |
 | A chat app (Claude.ai, ChatGPT) | Add a custom connector with the address `https://app.topped.ai/api/mcp`, then sign in with "Log in with Topped". |
 

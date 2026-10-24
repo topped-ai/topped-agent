@@ -166,7 +166,7 @@ describe("the skill's body", () => {
   });
 
   it("sets up Hermes and Grok with Log in with Topped or a key", () => {
-    expect(body).toContain("hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth");
+    expect(body).toContain("hermes mcp add --url https://app.topped.ai/api/mcp --auth oauth topped");
     expect(body).toMatch(/mcp_servers:\n\s+topped:\n\s+url: https:\/\/app\.topped\.ai\/api\/mcp\n\s+auth: oauth/);
     expect(body).toContain("grok mcp add --transport http topped https://app.topped.ai/api/mcp");
     expect(body).toContain('"server_url": "https://app.topped.ai/api/mcp"');
