@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### Set up
+
+- Hermes: `hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth`, or the `~/.hermes/config.yaml` entry, with "Log in with Topped" or a key. In the README and the skill.
+- Grok: a custom connector on grok.com, the Grok Build CLI (`grok mcp add --transport http topped https://app.topped.ai/api/mcp`), or the xAI API's remote MCP tool. In the README and the skill.
+
+### Listings
+
+- `server.json`: Topped's remote MCP server for the official MCP registry, at this version.
+- `docs/hermes/optional-mcps/topped/manifest.yaml`: the entry for Hermes's curated MCP list.
+
 ## 0.2.0 (2026-10-24)
 
 Brought in line with the 42 tools Topped lists today.

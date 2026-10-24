@@ -58,3 +58,9 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
   - `npx skills add` (`skills/topped/SKILL.md`);
   - ClawHub, for Hermes and OpenClaw (the `openclaw` block in the skill's frontmatter metadata).
 - **Node 20 or later,** ESM, TypeScript compiled to `dist/`, no runtime dependencies.
+
+## Listings
+
+- **`server.json` lists Topped's remote MCP server in the official MCP registry,** as `ai.topped/topped` with one `streamable-http` remote and no package: the server runs in Topped, so there is nothing to install. Its `version` follows `package.json`.
+- **`docs/hermes/optional-mcps/topped/manifest.yaml` is the entry for Hermes's curated MCP list,** ready to copy into a pull request there under the same path. It follows that list's shape: an `http` transport and native `oauth`, every tool checked at install.
+- Every setup the README and the skill give (Claude Code, Hermes, Grok, chat apps) reaches the same address, `https://app.topped.ai/api/mcp`, with "Log in with Topped" or a key.

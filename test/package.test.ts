@@ -25,6 +25,9 @@ function filesUnder(dir: string): string[] {
   });
 }
 
+/** Topped's engine words, which never reach anything a founder or an agent reads. */
+const ENGINE_WORDS = /\b(hooks?|batch(es)?|queues?|baselines?|winners?|allotments?|outliers?|receipts?)\b/i;
+
 const TEXT_FILES = [
   ...filesUnder("src"),
   ...filesUnder("test").filter((path) => !path.endsWith(".png")),
@@ -33,6 +36,7 @@ const TEXT_FILES = [
   "README.md",
   "CHANGELOG.md",
   "package.json",
+  "server.json",
   "skills/topped/SKILL.md",
   ".claude-plugin/plugin.json",
   ".claude-plugin/marketplace.json",
@@ -76,6 +80,36 @@ describe("the package", () => {
   });
 });
 
+describe("the MCP registry entry", () => {
+  const server = JSON.parse(readFileSync(join(root, "server.json"), "utf8"));
+
+  it("lists Topped's remote server at the package's version, with no package to install", () => {
+    expect(server.$schema).toBe("https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json");
+    expect(server.name).toBe("ai.topped/topped");
+    expect(server.title).toBe("Topped");
+    expect(server.version).toBe(pkg.version);
+    expect(server.websiteUrl).toBe("https://app.topped.ai");
+    expect(server.repository).toEqual({ url: "https://github.com/topped-ai/topped-agent", source: "github" });
+    expect(server.remotes).toEqual([{ type: "streamable-http", url: "https://app.topped.ai/api/mcp" }]);
+    expect(server.packages).toBeUndefined();
+  });
+
+  it("describes it within the registry's 100 characters, in Topped's words", () => {
+    expect(server.description.length).toBeGreaterThan(0);
+    expect(server.description.length).toBeLessThanOrEqual(100);
+    expect(server.description).not.toMatch(ENGINE_WORDS);
+  });
+
+  it("matches the Hermes list entry: the same address, native OAuth, the same description", () => {
+    const manifest = readFileSync(join(root, "docs/hermes/optional-mcps/topped/manifest.yaml"), "utf8");
+    expect(manifest).toMatch(/^name: topped$/m);
+    expect(manifest).toMatch(/^transport:\n  type: http\n  url: (\S+)$/m);
+    expect(/^  url: (\S+)$/m.exec(manifest)?.[1]).toBe(server.remotes[0].url);
+    expect(manifest).toMatch(/^auth:\n  type: oauth$/m);
+    expect(manifest).toContain(`description: ${server.description}`);
+  });
+});
+
 describe("the README", () => {
   const readme = readFileSync(join(root, "README.md"), "utf8").replace(/\\\|/g, "|");
 
@@ -103,12 +137,13 @@ describe("the README", () => {
 });
 
 describe("a public repository", () => {
-  it("names no host but Topped's own, this repository's and this machine", () => {
-    const allowed = new Set(["app.topped.ai", "localhost", "127.0.0.1"]);
+  it("names no host but Topped's own, this repository's, this machine and the MCP registry's schema", () => {
+    // The MCP registry's schema, which server.json must name.
+    const allowed = new Set(["app.topped.ai", "localhost", "127.0.0.1", "static.modelcontextprotocol.io"]);
     const ownRepository = /^github\.com\/topped-ai\/topped-agent(?:[/.#]|$)/i;
     for (const file of TEXT_FILES) {
       const text = readFileSync(join(root, file), "utf8");
-      for (const match of text.matchAll(/https?:\/\/([a-z0-9.-]+)(\S*)/gi)) {
+      for (const match of text.matchAll(/https?:\/\/([a-z0-9.-]+)([^\s"'`]*)/gi)) {
         const host = match[1]!.toLowerCase();
         expect(allowed.has(host) || ownRepository.test(host + match[2]), `${file}: ${match[0]}`).toBe(true);
       }
@@ -123,15 +158,14 @@ describe("a public repository", () => {
   });
 
   it("uses none of Topped's engine words in what the CLI prints, the README, the skill or the plugin", () => {
-    const banned = /\b(hooks?|batch(es)?|queues?|baselines?|winners?|allotments?|outliers?|receipts?)\b/i;
     const printed = JSON.stringify([helpDocument(null), ...COMMANDS.map((command) => helpDocument(command))]);
-    expect(printed).not.toMatch(banned);
+    expect(printed).not.toMatch(ENGINE_WORDS);
     for (const file of ["README.md", "CHANGELOG.md", "skills/topped/SKILL.md", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]) {
-      expect(readFileSync(join(root, file), "utf8"), file).not.toMatch(banned);
+      expect(readFileSync(join(root, file), "utf8"), file).not.toMatch(ENGINE_WORDS);
     }
     for (const file of filesUnder("src")) {
       const strings = readFileSync(join(root, file), "utf8").match(/"[^"\n]*"|`[^`\n]*`/g) ?? [];
-      for (const literal of strings) expect(literal, file).not.toMatch(banned);
+      for (const literal of strings) expect(literal, file).not.toMatch(ENGINE_WORDS);
     }
   });
 });

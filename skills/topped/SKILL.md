@@ -33,7 +33,16 @@ Check first: `topped whoami` names the Product it acts on. Exit code 3 means not
 - **MCP in Claude Code:** the founder creates a key under **Settings > Connect your agent**, then runs:
   `claude mcp add --transport http topped https://app.topped.ai/api/mcp --header "Authorization: Bearer <your key>"`
   A key is shown once. Never write it into a file in the repo, and never print it.
-- **Chat apps (Claude.ai, ChatGPT, Grok):** add a custom connector with the address `https://app.topped.ai/api/mcp`, then sign in with "Log in with Topped".
+- **Hermes over MCP:** `hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth`, which is this in `~/.hermes/config.yaml`; Hermes opens the founder's browser at "Log in with Topped" on first connect, then the session needs a restart so the tools load:
+  ```yaml
+  mcp_servers:
+    topped:
+      url: https://app.topped.ai/api/mcp
+      auth: oauth
+  ```
+  With a key instead of `auth: oauth`: `headers: { Authorization: "Bearer <your key>" }`.
+- **Grok:** on grok.com, open grok.com/connectors, **New Connector**, **Custom**, with the address `https://app.topped.ai/api/mcp`, then "Log in with Topped". In the Grok Build CLI: `grok mcp add --transport http topped https://app.topped.ai/api/mcp` (it signs in on first use; with a key, add `--header "Authorization: Bearer <your key>"`). Over the xAI API, Topped is a remote MCP tool: `{ "type": "mcp", "server_url": "https://app.topped.ai/api/mcp", "server_label": "topped", "authorization": "<your key>" }`.
+- **Chat apps (Claude.ai, ChatGPT):** add a custom connector with the address `https://app.topped.ai/api/mcp`, then sign in with "Log in with Topped".
 
 Signing up happens in the browser, at https://app.topped.ai; after that, everything below works from here.
 

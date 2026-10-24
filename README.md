@@ -13,7 +13,47 @@ Pick the way your agent talks to Topped, then [add the skill](#the-skill).
 |---|---|
 | A coding agent in a terminal | `npm i -g topped && topped login` (below). Coding agents do best with the CLI: it costs nothing in the agent's context until a command runs. |
 | Claude Code, over MCP | Create a key in Topped under **Settings > Connect your agent**, then run `claude mcp add --transport http topped https://app.topped.ai/api/mcp --header "Authorization: Bearer <your key>"`. |
-| A chat app (Claude.ai, ChatGPT, Grok) | Add a custom connector with the address `https://app.topped.ai/api/mcp`, then sign in with "Log in with Topped". |
+| Hermes | `hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth`, or the config below. |
+| Grok | A custom connector on grok.com, the Grok Build CLI, or the xAI API's remote MCP tool (below). |
+| A chat app (Claude.ai, ChatGPT) | Add a custom connector with the address `https://app.topped.ai/api/mcp`, then sign in with "Log in with Topped". |
+
+### Hermes
+
+Add Topped to `~/.hermes/config.yaml`. With "Log in with Topped", Hermes opens your browser on first connect, registers itself, and keeps the sign-in under `~/.hermes/mcp-tokens/`; no key goes in the file:
+
+```yaml
+mcp_servers:
+  topped:
+    url: https://app.topped.ai/api/mcp
+    auth: oauth
+```
+
+Or with a key from **Settings > Connect your agent**:
+
+```yaml
+mcp_servers:
+  topped:
+    url: https://app.topped.ai/api/mcp
+    headers:
+      Authorization: "Bearer <your key>"
+```
+
+Restart your Hermes session so the tools load. Hermes also runs the CLI: `npm i -g topped && topped login`.
+
+### Grok
+
+- **grok.com:** open grok.com/connectors, choose **New Connector**, then **Custom**, and give it the address `https://app.topped.ai/api/mcp`. Sign in with "Log in with Topped".
+- **Grok Build CLI:** `grok mcp add --transport http topped https://app.topped.ai/api/mcp`. It signs in with "Log in with Topped" on first use. With a key instead, add `--header "Authorization: Bearer <your key>"`.
+- **The xAI API:** give the request Topped as a remote MCP tool, with a key from **Settings > Connect your agent**:
+
+  ```json
+  {
+    "type": "mcp",
+    "server_url": "https://app.topped.ai/api/mcp",
+    "server_label": "topped",
+    "authorization": "<your key>"
+  }
+  ```
 
 The CLI and the MCP server run the same tools, with the same answers. Everything an agent does acts as you: there is no second approval inside Topped, so your conversation with your agent is where you say yes. **Settings > Connect your agent** lists every key and signed-in app, with Revoke.
 

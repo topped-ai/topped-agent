@@ -31,6 +31,9 @@ const TOOLS = new Map(TOOL_LISTING.tools.map((tool) => [tool.name, tool]));
 /** Values the skill names in backticks that look like tool names but are field values. */
 const FIELD_VALUES = new Set(["pre_launch", "wall_of_text", "demo_video", "no_source_post", "topped_idea", "in_playground", "time_zone_required"]);
 
+/** Keys of another app's own setup (Hermes's config file, the xAI API's MCP tool) that the Set up section writes. */
+const OTHER_APPS_KEYS = new Set(["mcp_servers", "server_url", "server_label"]);
+
 /** Top-level `key: value` lines of the frontmatter (every value here is one line). */
 function frontmatterFields(): Record<string, string> {
   return Object.fromEntries(
@@ -162,6 +165,13 @@ describe("the skill's body", () => {
     expect(body).toContain("custom connector with the address `https://app.topped.ai/api/mcp`");
   });
 
+  it("sets up Hermes and Grok with Log in with Topped or a key", () => {
+    expect(body).toContain("hermes mcp add topped --url https://app.topped.ai/api/mcp --auth oauth");
+    expect(body).toMatch(/mcp_servers:\n\s+topped:\n\s+url: https:\/\/app\.topped\.ai\/api\/mcp\n\s+auth: oauth/);
+    expect(body).toContain("grok mcp add --transport http topped https://app.topped.ai/api/mcp");
+    expect(body).toContain('"server_url": "https://app.topped.ai/api/mcp"');
+  });
+
   it("never asks anyone to edit an agent's instruction files", () => {
     expect(skill).not.toMatch(/CLAUDE\.md|AGENTS\.md/);
   });
@@ -207,7 +217,7 @@ describe("what the skill names is real", () => {
     const named = new Set(
       codeTexts()
         .flatMap((code) => code.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [])
-        .filter((word) => !FIELD_VALUES.has(word)),
+        .filter((word) => !FIELD_VALUES.has(word) && !OTHER_APPS_KEYS.has(word)),
     );
     for (const word of named) expect(TOOLS.has(word), word).toBe(true);
     for (const name of TOOLS.keys()) expect(named.has(name), name).toBe(true);

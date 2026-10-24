@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "ai.topped/topped",
+  "title": "Topped",
+  "description": "Make, approve, schedule and measure your Product's TikTok, Instagram and YouTube Posts.",
+  "version": "0.2.0",
+  "websiteUrl": "https://app.topped.ai",
+  "repository": {
+    "url": "https://github.com/topped-ai/topped-agent",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://app.topped.ai/api/mcp"
+    }
+  ]
+}
