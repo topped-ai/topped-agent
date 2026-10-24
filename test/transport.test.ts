@@ -69,7 +69,7 @@ describe("the output contract", () => {
 
   it("--version", async () => {
     const result = await harness.run(["--version"]);
-    expect(result.json).toEqual({ name: "topped", version: "0.1.0" });
+    expect(result.json).toEqual({ name: "topped", version: "0.2.0" });
   });
 
   it("one line by default, indented with --pretty, and nothing on stderr", async () => {

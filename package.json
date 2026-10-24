@@ -1,6 +1,6 @@
 {
   "name": "topped",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "The Topped CLI: let your coding agent run Topped, one JSON document per command.",
   "license": "MIT",
   "author": "Lior Cohen",

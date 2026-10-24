@@ -1,8 +1,10 @@
 /**
  * `topped upload <file>`: `upload_media` begin, then the bytes PUT to the
  * signed URL with exactly the headers begin returned (never the Topped
- * credential), then finish. A clip's length is read from its MP4 or MOV
- * header, or given with `--duration`; `--poster` sends a JPEG cover.
+ * credential), then finish. A clip's length goes with begin, which refuses
+ * one over 30 seconds before any byte moves: it is read from its MP4 or MOV
+ * header, or given with `--duration`. `--poster` sends a clip's JPEG cover,
+ * or an image's JPEG thumbnail.
  */
 
 import { readFile, stat } from "node:fs/promises";
@@ -85,9 +87,8 @@ export async function runUpload(session: Session, api: ToppedApi, options: Uploa
         : "clip";
   if (options.demo && kind !== "demo") throw usageError("--demo is for a video clip: a screen recording of the Product.");
   const video = kind === "clip" || kind === "demo";
-  if (!video && (options.duration !== undefined || options.poster !== undefined)) {
-    throw usageError("--duration and --poster are for a video clip.");
-  }
+  if (!video && options.duration !== undefined) throw usageError("--duration is for a video clip.");
+  if (kind === "sound" && options.poster !== undefined) throw usageError("--poster is for a video clip or an image.");
   if (kind !== "sound" && (options.title !== undefined || options.rightsConfirmed)) {
     throw usageError("--title and --rights-confirmed are for a sound.");
   }
@@ -111,6 +112,7 @@ export async function runUpload(session: Session, api: ToppedApi, options: Uploa
       fileName,
       mimeType,
       sizeBytes: bytes.byteLength,
+      ...(durationSeconds !== undefined ? { durationSeconds } : {}),
       ...(options.title !== undefined ? { title: options.title } : {}),
       ...(options.rightsConfirmed ? { rightsConfirmed: true } : {}),
     },
@@ -144,7 +146,6 @@ export async function runUpload(session: Session, api: ToppedApi, options: Uploa
       {
         step: "finish",
         uploadId,
-        ...(durationSeconds !== undefined ? { durationSeconds } : {}),
         ...(posterUploaded ? { posterUploaded: true } : {}),
       },
       "once",

@@ -92,7 +92,7 @@ const accounts: FlagSpec = {
   kind: "list",
   field: "connectionIds",
   value: "<a,b>",
-  help: "The connected accounts to post to, by connectionId (topped accounts).",
+  help: "The connected accounts to post to, by connectionId (topped accounts), up to 25.",
 };
 const caption: FlagSpec = {
   name: "caption",
@@ -105,7 +105,7 @@ const platformJson: FlagSpec = {
   name: "platform-json",
   kind: "string",
   value: "<file|->",
-  help: 'A JSON file with the platform settings: { "tiktok": [...], "youtube": {...} }. TikTok needs every choice as the founder made it.',
+  help: 'A JSON file with the platform settings: { "tiktok": [...], "youtube": {...} }. TikTok needs every choice as the founder made it; YouTube needs a privacy, and its title defaults to the caption\'s first line.',
 };
 const format: FlagSpec = {
   name: "format",
@@ -223,7 +223,7 @@ export const COMMANDS: readonly CommandSpec[] = [
     words: ["product", "update"],
     tool: "update_product",
     usage: "topped product update --json <file|->",
-    summary: "Change the Product; on a new account, set it up (name and oneLiner).",
+    summary: "Change the Product, or its logo (logoMediaId); on a new account, set it up (name and oneLiner).",
     args: [],
     flags: [],
     json: { field: null, required: true, help: "The fields to change, as update_product takes them." },
@@ -232,7 +232,7 @@ export const COMMANDS: readonly CommandSpec[] = [
     words: ["accounts"],
     tool: "list_connected_accounts",
     usage: "topped accounts [--post <postId>]",
-    summary: "Connected TikTok, Instagram and YouTube accounts; with --post, what each accepts for that Post.",
+    summary: "Connected TikTok, Instagram and YouTube accounts and how many the plan allows; with --post, what each accepts for that Post.",
     args: [],
     flags: [{ name: "post", kind: "string", field: "postId", value: "<postId>", help: "A Post's id, to read what each account accepts for it." }],
   },
@@ -269,7 +269,7 @@ export const COMMANDS: readonly CommandSpec[] = [
     words: ["for-you", "edit"],
     tool: "edit_for_you_draft",
     usage: "topped for-you edit <draftId> --json <file|->",
-    summary: "Change the current For You Draft's words, looks, photos, Sound or trim.",
+    summary: "Change the current For You Draft's words, text boxes, looks, images, photos, Sound, trim or volumes.",
     args: [draftId],
     flags: [],
     json: { field: "changes", required: true, help: "The changes, as edit_for_you_draft's changes field takes them." },
@@ -314,10 +314,29 @@ export const COMMANDS: readonly CommandSpec[] = [
   {
     words: ["starting-points"],
     tool: "list_starting_points",
-    usage: "topped starting-points --format <slideshow|wall_of_text|demo_video> [--cursor <cursor>]",
-    summary: "Starting points for a Format: photo sets, backgrounds or openers.",
+    usage:
+      "topped starting-points --format <slideshow|wall_of_text|demo_video> [--source <topped|yours>] [--tag <tag>] [--photo-set <startingPointId>] [--cursor <cursor>]",
+    summary: "Starting points for a Format: Topped's photo sets, backgrounds or openers, or with --source yours, your Library images or clips.",
     args: [],
-    flags: [format, cursor],
+    flags: [
+      format,
+      {
+        name: "source",
+        kind: "string",
+        field: "source",
+        value: "<topped|yours>",
+        help: "topped (the default), or yours: your Library images (Slideshow) or clips of 30 seconds or less, by mediaId.",
+      },
+      { name: "tag", kind: "string", field: "tag", value: "<tag>", help: "Topped's only: one of the tags a first page lists." },
+      {
+        name: "photo-set",
+        kind: "string",
+        field: "startingPointId",
+        value: "<startingPointId>",
+        help: "Slideshow only: one photo set's startingPointId, to see every photo in it.",
+      },
+      cursor,
+    ],
   },
   {
     words: ["sounds"],
@@ -375,7 +394,8 @@ export const COMMANDS: readonly CommandSpec[] = [
     tool: "generate_media",
     usage:
       "topped generate <image|video> --prompt <text> [--expected-credits <n>] [--model <model>] [--length <seconds>] [--starting-image <mediaId>]",
-    summary: "A Playground image or video. Spends credits: without --expected-credits, nothing is made and the price comes back.",
+    summary:
+      "A Playground image or video. Spends credits: without --expected-credits, nothing is made and the price comes back. A video finishes in the background: topped media --media-id <mediaId>.",
     args: [{ name: "kind", placeholder: "<image|video>", field: "kind", choices: ["image", "video"] }],
     flags: [
       { name: "prompt", kind: "string", field: "prompt", value: "<text>", required: true, help: "What to make." },
@@ -434,13 +454,21 @@ export const COMMANDS: readonly CommandSpec[] = [
   {
     words: ["media"],
     tool: "list_media",
-    usage: "topped media [--kind <image|clip|demo|sound>] [--cursor <cursor>] [--limit <n>]",
-    summary: "Images, clips, Demos and sounds in the Library, with their ids.",
+    usage: "topped media [--kind <image|clip|demo|sound>] [--cursor <cursor>] [--limit <n>] | --media-id <mediaId>",
+    summary:
+      "Images, clips, Demos and sounds in the Library, with their ids. --media-id reads one item, or whether a video topped generate started is still being made.",
     args: [],
     flags: [
       { name: "kind", kind: "string", field: "kind", value: "<image|clip|demo|sound>", help: "Only this kind." },
       cursor,
       limit,
+      {
+        name: "media-id",
+        kind: "string",
+        field: "mediaId",
+        value: "<mediaId>",
+        help: "One item, alone (no --kind, --cursor or --limit): a Library image or clip, or a video topped generate started.",
+      },
     ],
   },
   {
@@ -448,12 +476,17 @@ export const COMMANDS: readonly CommandSpec[] = [
     tool: "upload_media",
     usage:
       "topped upload <file> [--demo] [--duration <seconds>] [--poster <jpg>] [--title <name>] [--rights-confirmed]",
-    summary: "Upload an image, clip, Demo or sound to the Library and get its id.",
+    summary: "Upload an image, clip, Demo or sound to the Library and get its id. A clip or Demo plays 30 seconds at most.",
     args: [{ name: "file", placeholder: "<file>" }],
     flags: [
       { name: "demo", kind: "boolean", help: "A screen recording of the Product (up to 30 seconds), used as a Demo." },
-      { name: "duration", kind: "number", value: "<seconds>", help: "A clip's length, when it can't be read from its MP4 or MOV header." },
-      { name: "poster", kind: "string", value: "<jpg>", help: "A clip's cover: one JPEG frame, up to 1 MB." },
+      { name: "duration", kind: "number", value: "<seconds>", help: "A clip's length (30 seconds or less), when it can't be read from its MP4 or MOV header." },
+      {
+        name: "poster",
+        kind: "string",
+        value: "<jpg>",
+        help: "A clip's cover (one JPEG frame), or an image's thumbnail (a JPEG up to 640 px on its long edge); up to 1 MB.",
+      },
       { name: "title", kind: "string", value: "<name>", help: "A sound's name in Your sounds." },
       { name: "rights-confirmed", kind: "boolean", help: "A sound: the founder confirms they have the rights to use it wherever they publish it." },
     ],
@@ -477,9 +510,26 @@ export const COMMANDS: readonly CommandSpec[] = [
     words: ["media", "delete"],
     tool: "delete_media",
     usage: "topped media delete <mediaId>",
-    summary: "Delete an image or clip for good.",
+    summary: "Remove an image or clip from the Library, and from the Playground for one made there. The answer's undoToken puts it back.",
     args: [mediaId],
     flags: [],
+  },
+  {
+    words: ["media", "restore"],
+    tool: "restore_media",
+    usage: "topped media restore <mediaId> --undo-token <token>",
+    summary: "Put a removed image or clip back, with the undoToken topped media delete returned.",
+    args: [mediaId],
+    flags: [
+      {
+        name: "undo-token",
+        kind: "string",
+        field: "undoToken",
+        value: "<token>",
+        required: true,
+        help: "The undoToken topped media delete returned for this mediaId (topped media --media-id <mediaId> hands it back).",
+      },
+    ],
   },
 
   // Calendar and Scoreboard
@@ -543,10 +593,35 @@ export const COMMANDS: readonly CommandSpec[] = [
   {
     words: ["scoreboard"],
     tool: "get_scoreboard",
-    usage: "topped scoreboard [--account <connectionId>]",
+    usage: "topped scoreboard [--accounts <a,b>]",
     summary: "Real platform-reported counts and totals, overall and per account.",
     args: [],
-    flags: [{ name: "account", kind: "string", field: "connectionId", value: "<connectionId>", help: "Only this account's numbers." }],
+    flags: [
+      {
+        name: "accounts",
+        kind: "list",
+        field: "connectionIds",
+        value: "<a,b>",
+        help: "Only these connected accounts' numbers, by connectionId (up to 25). Left out, every account.",
+      },
+    ],
+  },
+  {
+    words: ["scoreboard", "posts"],
+    tool: "list_scoreboard_posts",
+    usage: "topped scoreboard posts [--accounts <a,b>] [--cursor <cursor>]",
+    summary: "Every published Post, newest first, 20 a page, with its accounts and real platform-reported counts.",
+    args: [],
+    flags: [
+      {
+        name: "accounts",
+        kind: "list",
+        field: "connectionIds",
+        value: "<a,b>",
+        help: "Only Posts on these connected accounts, counted on them alone (up to 25). Left out, every account.",
+      },
+      cursor,
+    ],
   },
   {
     words: ["scoreboard", "refresh"],
@@ -572,10 +647,19 @@ export const COMMANDS: readonly CommandSpec[] = [
   {
     words: ["watchlist", "browse"],
     tool: "browse_watchlist",
-    usage: "topped watchlist browse <watchlistHandleId>",
-    summary: "A watched Creator's newest Posts with their raw counts.",
-    args: [{ name: "watchlistHandleId", placeholder: "<watchlistHandleId>", field: "watchlistHandleId" }],
-    flags: [],
+    usage: "topped watchlist browse [--creators <a,b>] [--cursor <cursor>]",
+    summary: "Watched Creators' newest Posts, 20 a page, with their raw counts.",
+    args: [],
+    flags: [
+      {
+        name: "creators",
+        kind: "list",
+        field: "watchlistHandleIds",
+        value: "<a,b>",
+        help: "Only these Creators, by watchlistHandleId (topped watchlist), up to 40. Left out, every watched Creator.",
+      },
+      cursor,
+    ],
   },
   {
     words: ["watchlist", "watch"],

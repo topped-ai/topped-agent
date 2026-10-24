@@ -10,7 +10,7 @@ import { factsFromListing, TOOLS } from "../src/tools.js";
 import { FakeTopped, TOOL_LISTING } from "./fakeTopped.js";
 import { Harness } from "./harness.js";
 
-/** The 40 tools of the spec (§6), in its order. */
+/** The 42 tools Topped lists, in its order. */
 const SPEC_TOOLS = [
   "get_balances",
   "get_product",
@@ -40,12 +40,14 @@ const SPEC_TOOLS = [
   "upload_media",
   "update_media",
   "delete_media",
+  "restore_media",
   "list_publish_runs",
   "get_publish_run",
   "move_publish_run",
   "cancel_publish_run",
   "retry_publish_run",
   "get_scoreboard",
+  "list_scoreboard_posts",
   "refresh_metrics",
   "list_watchlist",
   "browse_watchlist",
@@ -58,6 +60,17 @@ const A = "11111111-1111-4111-8111-111111111111";
 const B = "22222222-2222-4222-8222-222222222222";
 const SLOT = "2026-10-02T17:00:00.000Z";
 
+/** A Slideshow started on one of the founder's Library images, in the editor's names: sent through as it is. */
+const OWN_SLIDESHOW = {
+  format: "slideshow",
+  startingPoint: { mediaId: A },
+  slides: [
+    { words: "Dark mode is here", style: { behindTheWords: "none", outline: { width: "none" }, size: "large" } },
+    { words: "Easier at night", photo: { photoSetId: B, photo: 3 }, images: [{ mediaId: A, position: "top", opacity: 0.8 }] },
+  ],
+  allTextBoxes: true,
+};
+
 /** The commands that run a tool, by tool name. */
 function commandsByTool(): Map<string, CommandSpec[]> {
   const map = new Map<string, CommandSpec[]>();
@@ -69,8 +82,8 @@ function commandsByTool(): Map<string, CommandSpec[]> {
 }
 
 describe("the command table", () => {
-  it("pins exactly one command to each of the 40 spec tools", () => {
-    expect(SPEC_TOOLS).toHaveLength(40);
+  it("pins exactly one command to each of the 42 tools", () => {
+    expect(SPEC_TOOLS).toHaveLength(42);
     const byTool = commandsByTool();
     for (const tool of SPEC_TOOLS) {
       expect(byTool.get(tool), tool).toHaveLength(1);
@@ -78,7 +91,7 @@ describe("the command table", () => {
     expect([...byTool.keys()].sort()).toEqual([...SPEC_TOOLS].sort());
   });
 
-  it("knows the same 40 tools as the live list, with the live list's transport facts", () => {
+  it("knows the same 42 tools as the live list, with the live list's transport facts", () => {
     expect(Object.keys(TOOLS)).toEqual([...SPEC_TOOLS]);
     expect(TOOL_LISTING.tools.map((tool) => tool.name)).toEqual([...SPEC_TOOLS]);
     for (const listing of TOOL_LISTING.tools) {
@@ -115,6 +128,8 @@ describe("each command runs its one tool with the input its flags name", () => {
     await writeFile(join(files, "changes.json"), JSON.stringify({ format: "slideshow", slides: [{ slide: 1, words: "Hi" }] }));
     await writeFile(join(files, "spec.json"), JSON.stringify({ fromSourcePost: { sourcePostId: A } }));
     await writeFile(join(files, "composition.json"), JSON.stringify({ format: "wall_of_text", text: "Hello" }));
+    await writeFile(join(files, "own.json"), JSON.stringify({ makeYourOwn: OWN_SLIDESHOW }));
+    await writeFile(join(files, "youtube.json"), JSON.stringify({ youtube: { privacy: "unlisted" } }));
     await writeFile(
       join(files, "platform.json"),
       JSON.stringify({ tiktok: [{ connectionId: A, sendToDrafts: true }], youtube: { title: "T", privacy: "public" } }),
@@ -174,6 +189,12 @@ describe("each command runs its one tool with the input its flags name", () => {
       },
     ],
     [
+      "approve to YouTube with a privacy and no title",
+      ["approve", A, "--post-now", "--accounts", B, "--caption", "Dark mode is here", "--platform-json", "youtube.json"],
+      "approve_draft",
+      { draftId: A, exit: "post_now", connectionIds: [B], caption: "Dark mode is here", youtube: { privacy: "unlisted" } },
+    ],
+    [
       "approve --schedule",
       ["approve", A, "--schedule", "2026-10-02T18:30:00-04:00", "--accounts", A],
       "approve_draft",
@@ -183,8 +204,32 @@ describe("each command runs its one tool with the input its flags name", () => {
     ["sources", ["sources", "--format", "slideshow"], "list_source_posts", { format: "slideshow" }],
     ["sources --cursor", ["sources", "--format", "demo_video", "--cursor", "c2"], "list_source_posts", { format: "demo_video", cursor: "c2" }],
     ["starting-points", ["starting-points", "--format", "wall_of_text"], "list_starting_points", { format: "wall_of_text" }],
+    [
+      "starting-points --tag",
+      ["starting-points", "--format", "slideshow", "--source", "topped", "--tag", "cozy", "--cursor", "c3"],
+      "list_starting_points",
+      { format: "slideshow", source: "topped", tag: "cozy", cursor: "c3" },
+    ],
+    [
+      "starting-points --source yours",
+      ["starting-points", "--format", "demo_video", "--source", "yours"],
+      "list_starting_points",
+      { format: "demo_video", source: "yours" },
+    ],
+    [
+      "starting-points --photo-set",
+      ["starting-points", "--format", "slideshow", "--photo-set", A],
+      "list_starting_points",
+      { format: "slideshow", startingPointId: A },
+    ],
     ["sounds", ["sounds"], "list_sounds", {}],
     ["draft create", ["draft", "create", "--json", "spec.json"], "create_draft", { fromSourcePost: { sourcePostId: A } }],
+    [
+      "draft create from your own Library media",
+      ["draft", "create", "--json", "own.json"],
+      "create_draft",
+      { makeYourOwn: OWN_SLIDESHOW },
+    ],
     [
       "draft edit",
       ["draft", "edit", A, "--json", "composition.json"],
@@ -235,9 +280,11 @@ describe("each command runs its one tool with the input its flags name", () => {
     ["saved delete", ["saved", "delete", A], "delete_saved_post", { postId: A }],
     ["media", ["media"], "list_media", {}],
     ["media --kind", ["media", "--kind", "demo", "--limit", "5"], "list_media", { kind: "demo", limit: 5 }],
+    ["media --media-id", ["media", "--media-id", A], "list_media", { mediaId: A }],
     ["media demo --on", ["media", "demo", A, "--on"], "update_media", { mediaId: A, demo: true }],
     ["media demo --off", ["media", "demo", A, "--off"], "update_media", { mediaId: A, demo: false }],
     ["media delete", ["media", "delete", A], "delete_media", { mediaId: A }],
+    ["media restore", ["media", "restore", A, "--undo-token", B], "restore_media", { mediaId: A, undoToken: B }],
     ["runs", ["runs"], "list_publish_runs", {}],
     ["runs --week day", ["runs", "--week", "2026-09-30"], "list_publish_runs", { week: "2026-09-30" }],
     ["runs --week ISO", ["runs", "--week", "2026-W40"], "list_publish_runs", { week: "2026-09-28" }],
@@ -263,11 +310,24 @@ describe("each command runs its one tool with the input its flags name", () => {
       { publishRunId: A, fromSlot: SLOT, toDay: "2026-10-06", toTime: "10:00" },
     ],
     ["scoreboard", ["scoreboard"], "get_scoreboard", {}],
-    ["scoreboard --account", ["scoreboard", "--account", A], "get_scoreboard", { connectionId: A }],
+    ["scoreboard --accounts", ["scoreboard", "--accounts", `${A},${B}`], "get_scoreboard", { connectionIds: [A, B] }],
+    ["scoreboard posts", ["scoreboard", "posts"], "list_scoreboard_posts", {}],
+    [
+      "scoreboard posts --accounts --cursor",
+      ["scoreboard", "posts", "--accounts", A, "--cursor", "s2"],
+      "list_scoreboard_posts",
+      { connectionIds: [A], cursor: "s2" },
+    ],
     ["scoreboard refresh", ["scoreboard", "refresh", "--accounts", `${A},${B}`], "refresh_metrics", { connectionIds: [A, B] }],
     ["scoreboard refresh --run", ["scoreboard", "refresh", "--run", A], "refresh_metrics", { publishRunId: A }],
     ["watchlist", ["watchlist"], "list_watchlist", {}],
-    ["watchlist browse", ["watchlist", "browse", A], "browse_watchlist", { watchlistHandleId: A }],
+    ["watchlist browse", ["watchlist", "browse"], "browse_watchlist", {}],
+    [
+      "watchlist browse --creators --cursor",
+      ["watchlist", "browse", "--creators", `${A},${B}`, "--cursor", "w2"],
+      "browse_watchlist",
+      { watchlistHandleIds: [A, B], cursor: "w2" },
+    ],
     ["watchlist watch", ["watchlist", "watch", "tiktok", "sleepcoach"], "watch_account", { platform: "tiktok", handle: "sleepcoach" }],
     ["watchlist unwatch", ["watchlist", "unwatch", A, "--handle", "sleepcoach"], "unwatch_account", { watchlistHandleId: A, handle: "sleepcoach" }],
     ["watchlist dismiss", ["watchlist", "dismiss", A, "--handle", "sleepcoach"], "dismiss_suggested_account", { suggestionId: A, handle: "sleepcoach" }],
@@ -290,6 +350,29 @@ describe("each command runs its one tool with the input its flags name", () => {
   it("covers every tool but upload_media, which topped upload drives in its own test", () => {
     const covered = new Set(cases.map(([, , tool]) => tool));
     expect(SPEC_TOOLS.filter((tool) => !covered.has(tool))).toEqual(["upload_media"]);
+  });
+
+  it.each([
+    [["scoreboard", "--account", A], "--account"],
+    [["watchlist", "browse", A], "Too many arguments"],
+    [["media", "restore", A], "--undo-token"],
+    [["starting-points", "--format", "slideshow", "--set", A], "--set"],
+  ])("refuses %j before anything is sent", async (argv, mention) => {
+    const result = await harness.run(argv, { env: env() });
+    expect(result.code).toBe(2);
+    expect(`${result.json.error} ${result.json.fix ?? ""}`).toContain(mention);
+    expect(fake.calls).toHaveLength(0);
+  });
+
+  it("passes a refused --media-id with other flags through as Topped wrote it", async () => {
+    fake.on("list_media", () => ({
+      status: 422,
+      body: { error: "mediaId reads one item on its own.", fix: "Send mediaId alone, or leave it out to list." },
+    }));
+    const result = await harness.run(["media", "--media-id", A, "--kind", "image"], { env: env() });
+    expect(result.code).toBe(1);
+    expect(result.json).toEqual({ error: "mediaId reads one item on its own.", fix: "Send mediaId alone, or leave it out to list." });
+    expect(fake.calls[0]!.input).toEqual({ mediaId: A, kind: "image" });
   });
 
   it("reads --json from stdin with -", async () => {
@@ -317,6 +400,6 @@ describe("each command runs its one tool with the input its flags name", () => {
   it("topped tools lists the live tools", async () => {
     const result = await harness.run(["tools"], { env: env() });
     expect(result.code).toBe(0);
-    expect(result.json.tools).toHaveLength(40);
+    expect(result.json.tools).toHaveLength(42);
   });
 });

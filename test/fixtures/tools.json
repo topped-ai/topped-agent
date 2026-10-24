@@ -53,6 +53,9 @@
           },
           "stage": {
             "type": "string"
+          },
+          "logoMediaId": {
+            "type": "string"
           }
         }
       }
@@ -260,7 +263,16 @@
           "format": {
             "type": "string"
           },
+          "source": {
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
           "cursor": {
+            "type": "string"
+          },
+          "startingPointId": {
             "type": "string"
           }
         },
@@ -545,6 +557,9 @@
           "kind": {
             "type": "string"
           },
+          "mediaId": {
+            "type": "string"
+          },
           "cursor": {
             "type": "string"
           },
@@ -585,11 +600,11 @@
           "rightsConfirmed": {
             "type": "boolean"
           },
-          "uploadId": {
-            "type": "string"
-          },
           "durationSeconds": {
             "type": "number"
+          },
+          "uploadId": {
+            "type": "string"
           },
           "posterUploaded": {
             "type": "boolean"
@@ -643,6 +658,29 @@
       }
     },
     {
+      "name": "restore_media",
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string"
+          },
+          "undoToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "mediaId",
+          "undoToken"
+        ]
+      }
+    },
+    {
       "name": "list_publish_runs",
       "annotations": {
         "readOnlyHint": true
@@ -662,10 +700,7 @@
           "timeZone": {
             "type": "string"
           }
-        },
-        "required": [
-          "timeZone"
-        ]
+        }
       }
     },
     {
@@ -781,7 +816,24 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "connectionId": {
+          "connectionIds": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    {
+      "name": "list_scoreboard_posts",
+      "annotations": {
+        "readOnlyHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "connectionIds": {
+            "type": "array"
+          },
+          "cursor": {
             "type": "string"
           }
         }
@@ -822,13 +874,13 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "watchlistHandleId": {
+          "watchlistHandleIds": {
+            "type": "array"
+          },
+          "cursor": {
             "type": "string"
           }
-        },
-        "required": [
-          "watchlistHandleId"
-        ]
+        }
       }
     },
     {

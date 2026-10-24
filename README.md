@@ -122,8 +122,8 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 |---|---|---|
 | `topped balances` | `get_balances` | Credits and content saves left, the plan, and today's For You use. |
 | `topped product` | `get_product` | The Product Profile and Voice settings. |
-| `topped product update --json <file\|->` | `update_product` | Change the Product; on a new account, set it up (name and oneLiner). |
-| `topped accounts [--post <postId>]` | `list_connected_accounts` | Connected TikTok, Instagram and YouTube accounts; with --post, what each accepts for that Post. |
+| `topped product update --json <file\|->` | `update_product` | Change the Product, or its logo (logoMediaId); on a new account, set it up (name and oneLiner). |
+| `topped accounts [--post <postId>]` | `list_connected_accounts` | Connected TikTok, Instagram and YouTube accounts and how many the plan allows; with --post, what each accepts for that Post. |
 | `topped accounts connect <tiktok\|instagram\|youtube> [--reconnect <connectionId>]` | `connect_account` | A link the founder opens to connect (or reconnect) an account. |
 | `topped accounts disconnect <connectionId> --platform <tiktok\|instagram\|youtube> --handle <handle>\|--no-handle` | `disconnect_account` | Disconnect an account; its Publications that haven't gone out are cancelled. |
 
@@ -132,7 +132,7 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | Command | Tool | What it does |
 |---|---|---|
 | `topped for-you` | `get_for_you_draft` | The current For You Draft, with its Based on and every slide or the video. |
-| `topped for-you edit <draftId> --json <file\|->` | `edit_for_you_draft` | Change the current For You Draft's words, looks, photos, Sound or trim. |
+| `topped for-you edit <draftId> --json <file\|->` | `edit_for_you_draft` | Change the current For You Draft's words, text boxes, looks, images, photos, Sound, trim or volumes. |
 | `topped pass <draftId>` | `pass_draft` | Pass on the current For You Draft. Free, and final. |
 | `topped approve <draftId> --save \| --post-now --accounts <a,b> \| --schedule <iso> --accounts <a,b> [--caption <text>] [--platform-json <file\|->]` | `approve_draft` | Approve a Draft: Save it, Post it now or Schedule it. Spends one content save. |
 | `topped undo <draftId>` | `undo_approve` | Undo an approval within 5 minutes, while nothing has gone out; the content save comes back. |
@@ -142,13 +142,13 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | Command | Tool | What it does |
 |---|---|---|
 | `topped sources --format <slideshow\|wall_of_text\|demo_video> [--cursor <cursor>]` | `list_source_posts` | Source posts Creator offers for a Format, with their raw counts. |
-| `topped starting-points --format <slideshow\|wall_of_text\|demo_video> [--cursor <cursor>]` | `list_starting_points` | Starting points for a Format: photo sets, backgrounds or openers. |
+| `topped starting-points --format <slideshow\|wall_of_text\|demo_video> [--source <topped\|yours>] [--tag <tag>] [--photo-set <startingPointId>] [--cursor <cursor>]` | `list_starting_points` | Starting points for a Format: Topped's photo sets, backgrounds or openers, or with --source yours, your Library images or clips. |
 | `topped sounds [--cursor <cursor>]` | `list_sounds` | Topped's sounds and the founder's own. |
 | `topped draft create --json <file\|->` | `create_draft` | Make a Creator Draft from a source post, or your own. Free. |
 | `topped draft edit <draftId> --json <file\|->` | `edit_draft` | Change a Draft you made: send the whole Post. Free. |
 | `topped draft rewrite <draftId> [--steer <text>] [--mention \| --no-mention] [--previous-idea <ideaId>]` | `rewrite_draft` | Topped's writer rewrites a Draft's words. Free. |
 | `topped caption --format <slideshow\|video> [--avoid <text>] [--platforms <a,b>] [--attempt <n>]` | `draft_caption` | Topped writes a caption for a Post. Plus and Pro. |
-| `topped generate <image\|video> --prompt <text> [--expected-credits <n>] [--model <model>] [--length <seconds>] [--starting-image <mediaId>]` | `generate_media` | A Playground image or video. Spends credits: without --expected-credits, nothing is made and the price comes back. |
+| `topped generate <image\|video> --prompt <text> [--expected-credits <n>] [--model <model>] [--length <seconds>] [--starting-image <mediaId>]` | `generate_media` | A Playground image or video. Spends credits: without --expected-credits, nothing is made and the price comes back. A video finishes in the background: topped media --media-id <mediaId>. |
 
 ### Library
 
@@ -159,10 +159,11 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | `topped saved publish <postId> --post-now \| --schedule <iso> --accounts <a,b> [--caption <text>] [--platform-json <file\|->]` | `publish_saved_post` | Post or schedule a Saved Post again. Free. |
 | `topped saved edit <postId> --json <file\|-> [--save-as-new]` | `edit_saved_post` | Re-edit a Saved Post. New media makes a second Saved Post and spends one content save, only with --save-as-new. |
 | `topped saved delete <postId>` | `delete_saved_post` | Remove a Saved Post from the Library. |
-| `topped media [--kind <image\|clip\|demo\|sound>] [--cursor <cursor>] [--limit <n>]` | `list_media` | Images, clips, Demos and sounds in the Library, with their ids. |
-| `topped upload <file> [--demo] [--duration <seconds>] [--poster <jpg>] [--title <name>] [--rights-confirmed]` | `upload_media` | Upload an image, clip, Demo or sound to the Library and get its id. |
+| `topped media [--kind <image\|clip\|demo\|sound>] [--cursor <cursor>] [--limit <n>] \| --media-id <mediaId>` | `list_media` | Images, clips, Demos and sounds in the Library, with their ids. --media-id reads one item, or whether a video topped generate started is still being made. |
+| `topped upload <file> [--demo] [--duration <seconds>] [--poster <jpg>] [--title <name>] [--rights-confirmed]` | `upload_media` | Upload an image, clip, Demo or sound to the Library and get its id. A clip or Demo plays 30 seconds at most. |
 | `topped media demo <mediaId> --on \| --off` | `update_media` | Use a clip as a Demo, or stop. |
-| `topped media delete <mediaId>` | `delete_media` | Delete an image or clip for good. |
+| `topped media delete <mediaId>` | `delete_media` | Remove an image or clip from the Library, and from the Playground for one made there. The answer's undoToken puts it back. |
+| `topped media restore <mediaId> --undo-token <token>` | `restore_media` | Put a removed image or clip back, with the undoToken topped media delete returned. |
 
 ### Calendar and Scoreboard
 
@@ -173,7 +174,8 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | `topped run move <runId> --from-slot <iso> --at <iso> \| --to-day <YYYY-MM-DD> [--to-time <HH:MM>]` | `move_publish_run` | Move a scheduled Post to another day and time within 30 days. |
 | `topped run cancel <runId> --slot <iso>` | `cancel_publish_run` | Cancel a scheduled Post before it goes out. It stays in the Library; no content save comes back. |
 | `topped run retry <runId> --from-slot <iso> --at <iso> \| --to-day <YYYY-MM-DD> --to-time <HH:MM>` | `retry_publish_run` | Try a Post that couldn't post again at a new time, on the accounts it failed on. Free. |
-| `topped scoreboard [--account <connectionId>]` | `get_scoreboard` | Real platform-reported counts and totals, overall and per account. |
+| `topped scoreboard [--accounts <a,b>]` | `get_scoreboard` | Real platform-reported counts and totals, overall and per account. |
+| `topped scoreboard posts [--accounts <a,b>] [--cursor <cursor>]` | `list_scoreboard_posts` | Every published Post, newest first, 20 a page, with its accounts and real platform-reported counts. |
 | `topped scoreboard refresh [--accounts <a,b>] [--run <runId>]` | `refresh_metrics` | Re-read the latest counts from the platforms. |
 
 ### Watchlist
@@ -181,7 +183,7 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | Command | Tool | What it does |
 |---|---|---|
 | `topped watchlist` | `list_watchlist` | Watched accounts and suggested accounts. |
-| `topped watchlist browse <watchlistHandleId>` | `browse_watchlist` | A watched Creator's newest Posts with their raw counts. |
+| `topped watchlist browse [--creators <a,b>] [--cursor <cursor>]` | `browse_watchlist` | Watched Creators' newest Posts, 20 a page, with their raw counts. |
 | `topped watchlist watch <tiktok\|instagram\|youtube> <handle>` | `watch_account` | Watch an account, or accept a suggested one. |
 | `topped watchlist unwatch <watchlistHandleId> --handle <handle>` | `unwatch_account` | Stop watching a Creator; their history is kept. |
 | `topped watchlist dismiss <suggestionId> --handle <handle>` | `dismiss_suggested_account` | Dismiss a suggested account for good. |
@@ -214,10 +216,16 @@ topped draft rewrite <draftId> --steer "shorter"
 topped approve <draftId> --schedule 2026-10-02T18:30:00-04:00 --accounts <connectionId>
 topped undo <draftId>                       # within 5 minutes: the content save comes back
 topped upload recording.mov --demo          # a screen recording of your Product, as a Demo
+topped starting-points --format slideshow --source yours   # your own Library images, to start a Slideshow on
+topped media delete <mediaId>               # the answer carries an undoToken
+topped media restore <mediaId> --undo-token <token>        # puts it back
 topped runs --week 2026-W40
+topped scoreboard posts --accounts <connectionId>          # each Post's own counts, newest first
 ```
 
-TikTok posts need every posting choice the founder made (privacy, comments, Duet, Stitch, music, disclosure, the AI-generated label) in `--platform-json`, or "send to TikTok drafts". `topped accounts --post <postId>` lists what each account allows.
+TikTok posts need every posting choice the founder made (privacy, comments, Duet, Stitch, music, disclosure, the AI-generated label) in `--platform-json`, or "send to TikTok drafts". YouTube needs a privacy there; its title defaults to the caption's first line. `topped accounts --post <postId>` lists what each account allows.
+
+What changed between versions: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 

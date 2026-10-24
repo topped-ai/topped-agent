@@ -17,7 +17,7 @@ const read: ToolFacts = { changes: false };
 const change: ToolFacts = { changes: true };
 const spend: ToolFacts = { changes: true, requestId: true };
 
-/** The 40 tools, in the spec's own order (§6). */
+/** The 42 tools, in the order Topped lists them. */
 export const TOOLS: Readonly<Record<string, ToolFacts>> = {
   // Account
   get_balances: read,
@@ -51,6 +51,7 @@ export const TOOLS: Readonly<Record<string, ToolFacts>> = {
   upload_media: change,
   update_media: change,
   delete_media: change,
+  restore_media: change,
   // Calendar and Scoreboard
   list_publish_runs: { changes: false, timeZone: true },
   get_publish_run: read,
@@ -58,6 +59,7 @@ export const TOOLS: Readonly<Record<string, ToolFacts>> = {
   cancel_publish_run: change,
   retry_publish_run: { changes: true, timeZone: true, requestId: true },
   get_scoreboard: read,
+  list_scoreboard_posts: read,
   refresh_metrics: read,
   // Watchlist
   list_watchlist: read,

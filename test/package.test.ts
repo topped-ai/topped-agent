@@ -31,6 +31,7 @@ const TEXT_FILES = [
   ...filesUnder("docs"),
   ...filesUnder("scripts"),
   "README.md",
+  "CHANGELOG.md",
   "package.json",
   "skills/topped/SKILL.md",
   ".claude-plugin/plugin.json",
@@ -40,13 +41,17 @@ const TEXT_FILES = [
 describe("the package", () => {
   it("is topped, with its bin, engines and only what ships", () => {
     expect(pkg.name).toBe("topped");
-    expect(pkg.version).toBe("0.1.0");
+    expect(pkg.version).toBe("0.2.0");
     expect(pkg.type).toBe("module");
     expect(pkg.bin).toEqual({ topped: "dist/cli.js" });
     expect(pkg.engines).toEqual({ node: ">=20" });
     expect(pkg.files).toEqual(["dist/**/*.js", "README.md", "LICENSE"]);
     expect(pkg.dependencies ?? {}).toEqual({});
     for (const script of ["build", "test", "typecheck"]) expect(pkg.scripts[script]).toBeTruthy();
+  });
+
+  it("has a CHANGELOG entry for this version", () => {
+    expect(readFileSync(join(root, "CHANGELOG.md"), "utf8")).toMatch(new RegExp(`^## ${pkg.version.replace(/\./g, "\\.")} \\(\\d{4}-\\d{2}-\\d{2}\\)$`, "m"));
   });
 
   it("prints the version package.json names", () => {
@@ -106,7 +111,7 @@ describe("a public repository", () => {
     const banned = /\b(hooks?|batch(es)?|queues?|baselines?|winners?|allotments?|outliers?|receipts?)\b/i;
     const printed = JSON.stringify([helpDocument(null), ...COMMANDS.map((command) => helpDocument(command))]);
     expect(printed).not.toMatch(banned);
-    for (const file of ["README.md", "skills/topped/SKILL.md", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]) {
+    for (const file of ["README.md", "CHANGELOG.md", "skills/topped/SKILL.md", ".claude-plugin/plugin.json", ".claude-plugin/marketplace.json"]) {
       expect(readFileSync(join(root, file), "utf8"), file).not.toMatch(banned);
     }
     for (const file of filesUnder("src")) {

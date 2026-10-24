@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -127,12 +127,13 @@ describe("topped upload", () => {
     fake.puts.length = 0;
     fake.on("upload_media", (input) => {
       if (input.step === "begin") {
-        const video = input.kind === "clip" || input.kind === "demo";
+        // A clip's cover frame, or an image's thumbnail: a sound has no second slot.
+        const poster = input.kind !== "sound";
         return {
           changed: true,
           uploadId: `ticket-${String(input.kind)}`,
           upload: { method: "PUT", url: `${fake.url}/storage/upload/1?sig=abc`, headers: { "content-type": input.mimeType } },
-          ...(video ? { poster: { method: "PUT", url: `${fake.url}/storage/poster/1`, headers: { "content-type": "image/jpeg" } } } : {}),
+          ...(poster ? { poster: { method: "PUT", url: `${fake.url}/storage/poster/1`, headers: { "content-type": "image/jpeg" } } } : {}),
         };
       }
       return { changed: true, message: "Uploaded to the Library.", mediaId: "33333333-3333-4333-8333-333333333333" };
@@ -158,12 +159,20 @@ describe("topped upload", () => {
     expect(fake.puts[0]!.bytes.length).toBe(70);
   });
 
-  it("a Demo: its length read from the MOV header, the poster sent, finish told both", async () => {
+  it("a Demo: its length read from the MOV header and sent with begin, the poster sent, finish told", async () => {
     const result = await harness.run(["upload", "demo.mov", "--demo", "--poster", "cover.jpg"], { env: env(), cwd: dir });
     expect(result.code, result.stdout).toBe(0);
     const [begin, finish] = fake.toolCalls("upload_media");
-    expect(begin!.input).toMatchObject({ kind: "demo", mimeType: "video/quicktime" });
-    expect(finish!.input).toEqual({ step: "finish", uploadId: "ticket-demo", durationSeconds: 20, posterUploaded: true });
+    expect(begin!.input).toEqual({
+      step: "begin",
+      kind: "demo",
+      fileName: "demo.mov",
+      mimeType: "video/quicktime",
+      sizeBytes: (await readFile(join(dir, "demo.mov"))).byteLength,
+      durationSeconds: 20,
+    });
+    // Topped's finish takes no length: begin carried it.
+    expect(finish!.input).toEqual({ step: "finish", uploadId: "ticket-demo", posterUploaded: true });
     expect(fake.puts.map((put) => put.path)).toEqual(["/storage/upload/1", "/storage/poster/1"]);
     expect(fake.puts[1]!.headers["content-type"]).toBe("image/jpeg");
   });
@@ -175,7 +184,35 @@ describe("topped upload", () => {
     expect(fake.calls).toHaveLength(0);
     const result = await harness.run(["upload", "clip.mp4", "--duration", "8.5"], { env: env(), cwd: dir });
     expect(result.code).toBe(0);
-    expect(fake.toolCalls("upload_media")[1]!.input).toEqual({ step: "finish", uploadId: "ticket-clip", durationSeconds: 8.5 });
+    const [begin, finish] = fake.toolCalls("upload_media");
+    expect(begin!.input).toMatchObject({ step: "begin", kind: "clip", durationSeconds: 8.5 });
+    expect(finish!.input).toEqual({ step: "finish", uploadId: "ticket-clip" });
+  });
+
+  it("a clip over 30 seconds: Topped's refusal at begin passes through, nothing is PUT and finish never runs", async () => {
+    fake.on("upload_media", () => ({
+      status: 422,
+      body: {
+        error: "That video is longer than 30 seconds.",
+        fix: 'Trim it to 30 seconds or less, then start again with step "begin".',
+      },
+    }));
+    const result = await harness.run(["upload", "clip.mp4", "--duration", "45"], { env: env(), cwd: dir });
+    expect(result.code).toBe(1);
+    expect(result.json.fix).toContain("Trim it");
+    expect(fake.toolCalls("upload_media").map((call) => call.input.step)).toEqual(["begin"]);
+    expect(fake.toolCalls("upload_media")[0]!.input.durationSeconds).toBe(45);
+    expect(fake.puts).toHaveLength(0);
+  });
+
+  it("an image with --poster: its thumbnail goes to the second slot, and finish is told", async () => {
+    const result = await harness.run(["upload", "test/fixtures/tiny.png", "--poster", join(dir, "cover.jpg")], { env: env() });
+    expect(result.code, result.stdout).toBe(0);
+    const [begin, finish] = fake.toolCalls("upload_media");
+    expect(begin!.input).not.toHaveProperty("durationSeconds");
+    expect(finish!.input).toEqual({ step: "finish", uploadId: "ticket-image", posterUploaded: true });
+    expect(fake.puts.map((put) => put.path)).toEqual(["/storage/upload/1", "/storage/poster/1"]);
+    expect(fake.puts[1]!.headers["content-type"]).toBe("image/jpeg");
   });
 
   it("a sound carries the founder's rights confirmation and its title", async () => {
@@ -204,6 +241,7 @@ describe("topped upload", () => {
     [["upload", "missing.png"], "missing.png"],
     [["upload", "test/fixtures/tiny.png", "--demo"], "--demo"],
     [["upload", "song.mp3", "--poster", "cover.jpg"], "--poster"],
+    [["upload", "test/fixtures/tiny.png", "--duration", "3"], "--duration"],
   ])("bad usage %j is exit 2 before anything is sent", async (argv, mention) => {
     const cwd = (argv as string[])[1]!.startsWith("test/") ? process.cwd() : dir;
     const result = await harness.run(argv as string[], { env: env(), cwd });

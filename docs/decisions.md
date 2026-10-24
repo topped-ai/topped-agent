@@ -16,7 +16,11 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
 - **Where the spec's flags and the live schema differ, the schema wins.**
   - `runs` has no `--status`; each run carries its own. Its `--week` also takes an ISO week, sent as that week's Monday.
   - `run retry` has no `--accounts`: only the failed accounts go again.
-  - `scoreboard` takes one `--account`, or none for every account.
+  - `scoreboard` and `scoreboard posts` take `--accounts <a,b>` (up to 25 connectionIds), or none for every account.
+  - `watchlist browse` takes `--creators <a,b>` (watchlistHandleIds, up to 40), or none for every watched Creator, and pages with `--cursor`.
+  - `media --media-id <mediaId>` reads one item, or a video `generate` started. Topped refuses it beside `--kind`, `--cursor` or `--limit`; the CLI sends what it is given and passes that refusal through.
+  - `starting-points --photo-set <startingPointId>` lists every photo of one set; `--source yours` lists the founder's own Library images or clips instead of Topped's.
+  - `media delete` answers with an `undoToken`; `media restore <mediaId> --undo-token <token>` puts the item back.
   - `for-you edit` takes the `draftId` as an argument.
   - The confirmations Topped requires are flags: `accounts disconnect --platform --handle|--no-handle`, `watchlist unwatch|dismiss --handle`, `run move|retry --from-slot` and `run cancel --slot`. `accounts connect --reconnect <connectionId>` reconnects.
 - **What the CLI adds to Topped's answers:**
@@ -31,6 +35,8 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
   - 2: bad usage.
   - 3: not signed in, or the sign-in was revoked.
   - 4: Topped could not be reached.
+- **What a Post looks like travels as JSON.** `draft create`, `draft edit`, `for-you edit` and `saved edit` take the Post in the editor's own names (`startingPoint`, `behindTheWords`, `images`, `allTextBoxes`, `volumes`) through `--json`, unchanged. The CLI has no flag for any of them, so a renamed field needs no new CLI.
+- **A clip's length goes with `upload_media` begin.** `topped upload` reads it from the MP4 or MOV header (or `--duration`) and sends it before any byte moves, so Topped refuses a clip over 30 seconds before the upload. `--poster` fills begin's second slot: a clip's cover frame, or an image's thumbnail.
 - **A For You Draft's words are rewritten only when it was made from a Template:** Topped's writer rewrites through the Template's slots. Every Draft Topped deals comes off its shelf of Templates. The CLI passes any refusal through unchanged.
 
 ## Retries

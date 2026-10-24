@@ -28,7 +28,7 @@ const [, frontmatter = "", body = ""] = skill.match(/^---\n([\s\S]*?)\n---\n([\s
 const TOOLS = new Map(TOOL_LISTING.tools.map((tool) => [tool.name, tool]));
 
 /** Values the skill names in backticks that look like tool names but are field values. */
-const FIELD_VALUES = new Set(["pre_launch", "wall_of_text", "demo_video", "no_source_post", "topped_idea"]);
+const FIELD_VALUES = new Set(["pre_launch", "wall_of_text", "demo_video", "no_source_post", "topped_idea", "in_playground"]);
 
 /** Top-level `key: value` lines of the frontmatter (every value here is one line). */
 function frontmatterFields(): Record<string, string> {
@@ -186,8 +186,8 @@ describe("the skill on repeating a call", () => {
 });
 
 describe("what the skill names is real", () => {
-  it("names every one of the 40 tools, and no tool that doesn't exist", () => {
-    expect(TOOLS.size).toBe(40);
+  it("names every one of the 42 tools, and no tool that doesn't exist", () => {
+    expect(TOOLS.size).toBe(42);
     const named = new Set(
       codeTexts()
         .flatMap((code) => code.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [])
@@ -229,6 +229,39 @@ describe("what the skill names is real", () => {
       });
       for (const token of rest.filter((t) => t.startsWith("--"))) expect(knownFlag(command, token.slice(2)), line).toBe(true);
     }
+  });
+
+  it("writes Posts in the editor's names, never the retired ones", () => {
+    const code = codeTexts().join("\n");
+    for (const retired of [/"look"/, /\bsameLookOnEverySlide\b/, /\bstickers?\b/, /"music"/, /"demo":/, /`plates`|`band`/]) {
+      expect(code).not.toMatch(retired);
+    }
+    for (const name of ["behindTheWords", "allTextBoxes", "didNotFit", "images", "opacity", "photoSetId", "demoSound"]) {
+      expect(code, name).toContain(name);
+    }
+    expect(body).not.toMatch(/\bsticker/i);
+  });
+
+  it("starts every Post of your own on a startingPoint: Topped's by startingPointId, or the founder's Library media by mediaId", () => {
+    const fenced = [...body.matchAll(/```json\n([\s\S]*?)```/g)].map((match) => match[1]!);
+    const posts = fenced
+      .filter((code) => code.includes('"makeYourOwn"'))
+      .map((code) => JSON.parse(code).makeYourOwn as Record<string, unknown>);
+    expect(posts.length).toBeGreaterThanOrEqual(4);
+    for (const post of posts) {
+      expect(post).not.toHaveProperty("startingPointId");
+      expect(Object.keys(post.startingPoint as object)).toHaveLength(1);
+    }
+    const kinds = posts.map((post) => Object.keys(post.startingPoint as object)[0]);
+    expect(kinds).toContain("startingPointId");
+    expect(kinds).toContain("mediaId");
+    expect(body).toContain("topped starting-points --format slideshow --source yours");
+  });
+
+  it("puts a removed image or clip back with its undoToken, and never polls a video that stays in the Playground", () => {
+    expect(body).toContain("topped media restore <mediaId> --undo-token <token>");
+    expect(body).toMatch(/`in_playground`[^\n]*never check again/);
+    expect(body).toContain("topped media --media-id <mediaId>");
   });
 
   it("writes --platform-json files with only tiktok and youtube", () => {
