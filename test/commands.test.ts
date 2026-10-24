@@ -9,6 +9,7 @@ import { factsFromListing, TOOLS } from "../src/tools.js";
 
 import { FakeTopped, TOOL_LISTING } from "./fakeTopped.js";
 import { Harness } from "./harness.js";
+import { LIVE_INPUT_SCHEMAS, schemaErrors } from "./jsonSchema.js";
 
 /** The 42 tools Topped lists, in its order. */
 const SPEC_TOOLS = [
@@ -70,6 +71,12 @@ const OWN_SLIDESHOW = {
   ],
   allTextBoxes: true,
 };
+
+describe("the Posts these tests send", () => {
+  it("fit Topped's whole live input schema, nested fields included", () => {
+    expect(schemaErrors({ makeYourOwn: OWN_SLIDESHOW }, LIVE_INPUT_SCHEMAS.get("create_draft")!)).toEqual([]);
+  });
+});
 
 /** The commands that run a tool, by tool name. */
 function commandsByTool(): Map<string, CommandSpec[]> {
@@ -339,10 +346,10 @@ describe("each command runs its one tool with the input its flags name", () => {
     expect(fake.calls).toHaveLength(1);
     const call = fake.calls[0]!;
     expect(call.name).toBe(tool);
-    const { timeZone, requestId, ...input } = call.input;
+    const { requestId, ...input } = call.input;
+    // No time zone unless --time-zone names one: Topped reads the founder's saved zone.
     expect(input).toEqual(expected);
-    // The transport inputs only where the tool takes them.
-    expect(timeZone !== undefined).toBe(TOOLS[tool]!.timeZone !== undefined);
+    // The requestId only where the tool takes one.
     expect(requestId !== undefined).toBe(TOOLS[tool]!.requestId === true);
     expect(call.authorization).toBe(`Bearer ${fake.apiKey}`);
   });

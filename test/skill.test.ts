@@ -14,6 +14,7 @@ import { COMMANDS, type CommandSpec } from "../src/commands.js";
 import { LOGIN_TIMEOUT_MS } from "../src/deps.js";
 import { GLOBAL_FLAGS as HELP_GLOBAL_FLAGS } from "../src/help.js";
 import { TOOL_LISTING } from "./fakeTopped.js";
+import { LIVE_INPUT_SCHEMAS, schemaErrors } from "./jsonSchema.js";
 
 const root = process.cwd();
 const read = (path: string) => readFileSync(join(root, path), "utf8");
@@ -28,7 +29,7 @@ const [, frontmatter = "", body = ""] = skill.match(/^---\n([\s\S]*?)\n---\n([\s
 const TOOLS = new Map(TOOL_LISTING.tools.map((tool) => [tool.name, tool]));
 
 /** Values the skill names in backticks that look like tool names but are field values. */
-const FIELD_VALUES = new Set(["pre_launch", "wall_of_text", "demo_video", "no_source_post", "topped_idea", "in_playground"]);
+const FIELD_VALUES = new Set(["pre_launch", "wall_of_text", "demo_video", "no_source_post", "topped_idea", "in_playground", "time_zone_required"]);
 
 /** Top-level `key: value` lines of the frontmatter (every value here is one line). */
 function frontmatterFields(): Record<string, string> {
@@ -180,10 +181,25 @@ describe("the skill on repeating a call", () => {
     expect(body).toMatch(/Exit 3: run `topped login`, then do what `fix` says[^\n]*same `--request-id`/);
   });
 
+  it("leaves the time zone to the one the founder saved, over the CLI and MCP alike", () => {
+    expect(body).toContain("Leave `timeZone` out, over the CLI and MCP alike");
+    expect(body).toMatch(/`get_balances` \(`topped balances`\) shows it as `timeZone`/);
+    expect(body).toMatch(/only when the founder names another zone/);
+    expect(body).not.toMatch(/this machine's zone;|CLI sends this machine's zone/);
+  });
+
   it("runs topped login only when whoami says it is not signed in", () => {
     expect(body).toMatch(/Exit code 3 means not signed in\. Run `topped login` only then/);
   });
 });
+
+/** The tool a fenced JSON example is for, and the whole input it stands in: the file `--json` takes, with the arguments around it. */
+function exampleInput(block: Record<string, unknown>): [string, Record<string, unknown>] {
+  if ("fromSourcePost" in block || "makeYourOwn" in block) return ["create_draft", block];
+  if ("tiktok" in block || "youtube" in block) return ["approve_draft", { draftId: "<draftId>", exit: "post_now", ...block }];
+  if ("format" in block) return ["edit_for_you_draft", { draftId: "<draftId>", changes: block }];
+  throw new Error(`No tool takes this example: ${JSON.stringify(block)}`);
+}
 
 describe("what the skill names is real", () => {
   it("names every one of the 42 tools, and no tool that doesn't exist", () => {
@@ -240,6 +256,31 @@ describe("what the skill names is real", () => {
       expect(code, name).toContain(name);
     }
     expect(body).not.toMatch(/\bsticker/i);
+  });
+
+  it("writes every JSON example so it fits the tool's whole live input schema", () => {
+    const blocks = [...body.matchAll(/```json\n([\s\S]*?)```/g)].map((match) => JSON.parse(match[1]!) as Record<string, unknown>);
+    expect(blocks.length).toBeGreaterThanOrEqual(7);
+    for (const block of blocks) {
+      const [tool, input] = exampleInput(block);
+      expect(schemaErrors(input, LIVE_INPUT_SCHEMAS.get(tool)!), `${tool}: ${JSON.stringify(block)}`).toEqual([]);
+    }
+  });
+
+  it("checks examples deeply enough to catch a renamed nested field", () => {
+    const create = LIVE_INPUT_SCHEMAS.get("create_draft")!;
+    const slideshow = { format: "slideshow", startingPoint: { startingPointId: "<startingPointId>" }, slides: [{ words: "Hi" }] };
+    expect(schemaErrors({ makeYourOwn: slideshow }, create)).toEqual([]);
+    const retired = [
+      { ...slideshow, startingPoint: undefined, startingPointId: "<startingPointId>" },
+      { ...slideshow, slides: [{ words: "Hi", style: { look: "plates" } }] },
+      { ...slideshow, slides: [{ words: "Hi", stickers: [{ mediaId: "<mediaId>" }] }] },
+      { ...slideshow, sameLookOnEverySlide: true },
+      { format: "demo_video", startingPoint: { startingPointId: "<openerId>" }, demoMediaId: "<demoMediaId>", volumes: { music: 0.5 } },
+    ];
+    for (const makeYourOwn of retired) {
+      expect(schemaErrors(JSON.parse(JSON.stringify({ makeYourOwn })), create), JSON.stringify(makeYourOwn)).not.toEqual([]);
+    }
   });
 
   it("starts every Post of your own on a startingPoint: Topped's by startingPointId, or the founder's Library media by mediaId", () => {

@@ -34,7 +34,6 @@ export interface RunOptions {
   /** Stand in for a request's timer, as if that long had passed. */
   abortAfter?: (ms: number) => AbortSignal;
   readStdin?: () => Promise<string>;
-  systemTimeZone?: string;
   /** Sees each stderr write as it happens, like a founder reading the terminal. */
   onStderr?: (text: string) => void;
 }
@@ -85,7 +84,6 @@ export class Harness {
       },
       abortAfter: options.abortAfter ?? ((ms) => AbortSignal.timeout(ms)),
       randomId: () => `test-${++this.ids}`,
-      systemTimeZone: () => options.systemTimeZone ?? "Europe/London",
       cwd: options.cwd ?? process.cwd(),
       loginTimeoutMs: options.loginTimeoutMs ?? 10_000,
     };

@@ -77,6 +77,15 @@ describe("the topped binary", () => {
     expect(JSON.parse(stdout)).toEqual({ credits: 40, contentSaves: 2 });
   });
 
+  it("sends no time zone from a machine set to UTC, so Topped reads the zone the founder saved", async () => {
+    fake.on("list_publish_runs", () => ({ status: "ok", runs: [] }));
+    const { code, stdout } = await topped(["runs"], { TOPPED_API_KEY: fake.apiKey, TZ: "UTC" });
+    expect(code, stdout).toBe(0);
+    const calls = fake.toolCalls("list_publish_runs");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.input).toEqual({});
+  });
+
   it("bad usage: exit 2", async () => {
     const { code, stdout } = await topped(["approve"]);
     expect(code).toBe(2);

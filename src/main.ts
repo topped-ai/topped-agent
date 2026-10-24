@@ -94,9 +94,10 @@ async function buildInput(deps: CliDeps, parsed: Parsed, command: CommandSpec): 
 }
 
 /**
- * The inputs the transport adds (spec §11): the founder's time zone for a
- * tool that takes one, and a requestId for a tool that takes one - the
- * caller's, or a fresh one per run, echoed back.
+ * The inputs the transport adds (spec §11): `--time-zone` for a tool that
+ * takes one, and a requestId for a tool that takes one - the caller's, or a
+ * fresh one per run, echoed back. No zone is sent unless one is given:
+ * Topped then reads days in the zone the founder saved, never this machine's.
  */
 function addTransportInputs(
   deps: CliDeps,
@@ -105,12 +106,9 @@ function addTransportInputs(
   globals: GlobalOptions,
   input: Record<string, unknown>,
 ): string | undefined {
-  if (facts.timeZone) {
-    const sent = typeof input[TIME_ZONE_INPUT] === "string" ? (input[TIME_ZONE_INPUT] as string) : undefined;
-    const zone = globals.timeZone ?? sent ?? deps.systemTimeZone();
-    if (zone) input[TIME_ZONE_INPUT] = zone;
-  } else if (globals.timeZone !== undefined) {
-    throw usageError(`${tool} takes no time zone. Leave out --time-zone.`);
+  if (globals.timeZone !== undefined) {
+    if (!facts.timeZone) throw usageError(`${tool} takes no time zone. Leave out --time-zone.`);
+    input[TIME_ZONE_INPUT] = globals.timeZone;
   }
   if (facts.requestId) {
     const sent = typeof input[REQUEST_ID_INPUT] === "string" ? (input[REQUEST_ID_INPUT] as string) : undefined;

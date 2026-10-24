@@ -13,7 +13,7 @@ import { VERSION } from "./version.js";
 export const GLOBAL_FLAGS = [
   { flag: "--pretty", help: "Indent the JSON for people." },
   { flag: "--verbose", help: "Name each request and its status on stderr (never a token)." },
-  { flag: `--time-zone ${GLOBAL_VALUE_FLAGS["time-zone"].placeholder}`, help: "The founder's IANA time zone for tools that take one; defaults to this system's." },
+  { flag: `--time-zone ${GLOBAL_VALUE_FLAGS["time-zone"].placeholder}`, help: "An IANA time zone for tools that take one, only when the founder names one. Left out, Topped uses the zone the founder saved in Settings." },
   { flag: `--request-id ${GLOBAL_VALUE_FLAGS["request-id"].placeholder}`, help: "For tools that spend or publish: repeating the call with the same id returns the first result." },
   { flag: "--help", help: "This document, or one command's." },
   { flag: "--version", help: "The CLI's version." },
@@ -56,7 +56,7 @@ function commandHelp(command: CommandSpec) {
         ? [{ flag: "--json <file|->", field: command.json.field ?? "(the whole input)", ...(command.json.required ? { required: true } : {}), help: `${command.json.help} "-" reads stdin.` }]
         : []),
     ],
-    ...(facts?.timeZone ? { timeZone: "Sent as this system's time zone unless --time-zone says otherwise." } : {}),
+    ...(facts?.timeZone ? { timeZone: "Days and times read in the zone the founder saved in Settings (topped balances shows it); --time-zone <zone> names another." } : {}),
     ...(facts?.requestId ? { requestId: "A fresh id per run, echoed in the output; --request-id <id> repeats a call safely." } : {}),
   };
 }

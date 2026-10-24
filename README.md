@@ -102,7 +102,7 @@ Two meters, never confused. **Credits** pay for Playground images and videos (`t
 
 Commands that spend or publish (`approve`, `saved publish`, `saved edit`, `for-you edit`, `generate`, `run retry`) carry a request id: a fresh one per run, echoed in the output as `requestId`. Pass the same `--request-id <id>` again and Topped returns the first result instead of acting twice. The CLI retries network failures and Topped outages on its own, a few times with backoff, and never a refusal. A command gets up to five minutes, as long as Topped lets one call run. When a command with a request id loses its answer on the way back, the CLI asks again under the same id until the first result comes back. After exit 4, do what `fix` says: for a command with a request id, run it again with that `--request-id`; a plain rerun gets a fresh id and could act twice.
 
-Commands that read days and times (`runs`, `run move`, `run retry`) send your system's time zone; `--time-zone <IANA zone>` overrides it.
+Commands that read days and times (`runs`, `run move`, `run retry`) read them in the time zone the founder saved in Topped's Settings, never this machine's; `topped balances` shows it. `--time-zone <IANA zone>` names another, only when the founder asks for one. With no zone saved, Topped refuses with `time_zone_required`: ask the founder for theirs and pass it with `--time-zone`.
 
 ## Commands
 
@@ -203,7 +203,7 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 |---|---|
 | `--pretty` | Indent the JSON. |
 | `--verbose` | Name each request and its status on stderr. |
-| `--time-zone <zone>` | The founder's IANA time zone, for commands that take one. |
+| `--time-zone <zone>` | An IANA time zone for commands that take one, when the founder names one. Left out, Topped uses the zone saved in Settings. |
 | `--request-id <id>` | For commands that spend or publish: repeat a call safely. |
 | `--help` | All commands, or one command's usage, as JSON. |
 | `--version` | The CLI's version. |

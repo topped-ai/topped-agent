@@ -419,12 +419,26 @@ describe("a slow call", () => {
 });
 
 describe("timeZone and requestId", () => {
-  it("a tool that takes timeZone gets the system's zone", async () => {
-    await harness.run(["runs"], { env: env(), systemTimeZone: "America/New_York" });
-    expect(fake.calls[0]!.input.timeZone).toBe("America/New_York");
+  it("no zone is sent by default, so Topped reads the founder's saved one", async () => {
+    await harness.run(["runs"], { env: env() });
+    await harness.run(["run", "move", A, "--from-slot", "2026-10-02T17:00:00Z", "--to-day", "2026-10-03", "--to-time", "09:00"], { env: env() });
+    await harness.run(["run", "retry", A, "--from-slot", "2026-10-02T17:00:00Z", "--to-day", "2026-10-03", "--to-time", "09:00"], { env: env() });
+    expect(fake.calls.map((call) => call.name)).toEqual(["list_publish_runs", "move_publish_run", "retry_publish_run"]);
+    for (const call of fake.calls) expect(call.input, call.name).not.toHaveProperty("timeZone");
   });
 
-  it("--time-zone overrides it", async () => {
+  it("Topped's refusal when the founder saved no zone passes through as it is", async () => {
+    const refusal = {
+      error: "time_zone_required",
+      fix: 'This tool reads days and times in the founder\'s time zone, and they have not saved one in Topped. Send "timeZone" with their IANA time zone.',
+    };
+    fake.on("list_publish_runs", () => ({ status: 400, body: refusal }));
+    const result = await harness.run(["runs"], { env: env() });
+    expect(result.code).toBe(1);
+    expect(result.json).toMatchObject(refusal);
+  });
+
+  it("--time-zone sends the zone the founder names", async () => {
     await harness.run(["run", "move", A, "--from-slot", "2026-10-02T17:00:00Z", "--to-day", "2026-10-03", "--time-zone", "Asia/Tokyo"], {
       env: env(),
     });
@@ -436,11 +450,13 @@ describe("timeZone and requestId", () => {
     expect(fake.calls[0]!.input).toEqual({});
   });
 
-  it("topped call adds the zone and keeps one the input already names", async () => {
+  it("topped call adds no zone, keeps one the input names, and --time-zone wins over it", async () => {
     await harness.run(["call", "list_publish_runs"], { env: env() });
-    expect(fake.calls[0]!.input.timeZone).toBe("Europe/London");
+    expect(fake.calls[0]!.input).not.toHaveProperty("timeZone");
     await harness.run(["call", "list_publish_runs", "--json", "-"], { env: env(), stdin: '{"timeZone":"Australia/Sydney"}' });
     expect(fake.calls[1]!.input.timeZone).toBe("Australia/Sydney");
+    await harness.run(["call", "list_publish_runs", "--json", "-", "--time-zone", "Asia/Tokyo"], { env: env(), stdin: '{"timeZone":"Australia/Sydney"}' });
+    expect(fake.calls[2]!.input.timeZone).toBe("Asia/Tokyo");
   });
 
   it("--time-zone and --request-id may come before the command, bare or with =", async () => {

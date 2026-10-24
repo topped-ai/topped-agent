@@ -19,8 +19,6 @@ export interface CliDeps {
   /** The one timer on a request: a signal that aborts after `ms`. */
   abortAfter(ms: number): AbortSignal;
   randomId(): string;
-  /** The system's IANA time zone. */
-  systemTimeZone(): string | undefined;
   cwd: string;
   /** How long `topped login` waits for the browser to come back. */
   loginTimeoutMs: number;
@@ -41,7 +39,6 @@ export function realDeps(): CliDeps {
     sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
     abortAfter: (ms) => AbortSignal.timeout(ms),
     randomId: () => randomUUID(),
-    systemTimeZone: () => Intl.DateTimeFormat().resolvedOptions().timeZone,
     cwd: process.cwd(),
     loginTimeoutMs: LOGIN_TIMEOUT_MS,
   };

@@ -45,7 +45,7 @@ describe("the package", () => {
     expect(pkg.type).toBe("module");
     expect(pkg.bin).toEqual({ topped: "dist/cli.js" });
     expect(pkg.engines).toEqual({ node: ">=20" });
-    expect(pkg.files).toEqual(["dist/**/*.js", "README.md", "LICENSE"]);
+    expect(pkg.files).toEqual(["dist/**/*.js", "README.md", "CHANGELOG.md", "LICENSE"]);
     expect(pkg.dependencies ?? {}).toEqual({});
     for (const script of ["build", "test", "typecheck"]) expect(pkg.scripts[script]).toBeTruthy();
   });
@@ -78,6 +78,12 @@ describe("the README", () => {
     for (const needle of ["npm i -g topped", "topped login", "exactly one JSON document", "TOPPED_API_KEY", "TOPPED_URL"]) {
       expect(readme).toContain(needle);
     }
+  });
+
+  it("links only to files that ship beside it, so no link is dead in an installed copy", () => {
+    const links = [...readme.matchAll(/\]\(([^)\s]+)\)/g)].map((match) => match[1]!).filter((target) => !/^[a-z]+:|^#/i.test(target));
+    expect(links).toContain("CHANGELOG.md");
+    for (const target of links) expect(pkg.files, target).toContain(target.split("#")[0]);
   });
 
   it("says the sign-in browser must be on the machine running topped, and how to sign in from another", () => {
