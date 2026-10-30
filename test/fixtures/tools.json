@@ -130,30 +130,6 @@
       }
     },
     {
-      "name": "edit_for_you_draft",
-      "annotations": {
-        "readOnlyHint": false,
-        "destructiveHint": true,
-        "idempotentHint": false
-      },
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "draftId": {
-            "type": "string"
-          },
-          "changes": {},
-          "requestId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "draftId",
-          "changes"
-        ]
-      }
-    },
-    {
       "name": "pass_draft",
       "annotations": {
         "readOnlyHint": false,
@@ -317,7 +293,7 @@
       "annotations": {
         "readOnlyHint": false,
         "destructiveHint": true,
-        "idempotentHint": true
+        "idempotentHint": false
       },
       "inputSchema": {
         "type": "object",
@@ -325,7 +301,10 @@
           "draftId": {
             "type": "string"
           },
-          "composition": {}
+          "composition": {},
+          "requestId": {
+            "type": "string"
+          }
         },
         "required": [
           "draftId",

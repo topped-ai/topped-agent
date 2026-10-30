@@ -11,7 +11,7 @@ import { FakeTopped, TOOL_LISTING } from "./fakeTopped.js";
 import { Harness } from "./harness.js";
 import { LIVE_INPUT_SCHEMAS, schemaErrors } from "./jsonSchema.js";
 
-/** The 42 tools Topped lists, in its order. */
+/** The 41 tools Topped lists, in its order. */
 const SPEC_TOOLS = [
   "get_balances",
   "get_product",
@@ -20,7 +20,6 @@ const SPEC_TOOLS = [
   "connect_account",
   "disconnect_account",
   "get_for_you_draft",
-  "edit_for_you_draft",
   "pass_draft",
   "approve_draft",
   "undo_approve",
@@ -75,8 +74,8 @@ const OWN_SLIDESHOW = {
 /** A Wall of text: `draft edit` sends it as edit_draft's composition, `saved edit` as edit_saved_post's post. */
 const WALL_OF_TEXT = { format: "wall_of_text", startingPoint: { startingPointId: A }, text: { words: "Hello" } };
 
-/** New words on a For You Draft's slide 1: `for-you edit` sends it as edit_for_you_draft's changes. */
-const FOR_YOU_CHANGES = { format: "slideshow", slides: [{ slide: 1, words: "Hi" }] };
+/** New words on the For You Draft's slide 1, on its own photo set: `draft edit` sends it as edit_draft's composition. */
+const FOR_YOU_CHANGES = { format: "slideshow", startingPoint: { startingPointId: A }, slides: [{ slide: 1, words: "Hi" }] };
 
 /** `--platform-json` files: TikTok and YouTube together, and YouTube with a privacy and no title. */
 const PLATFORM = { tiktok: [{ connectionId: A, sendToDrafts: true }], youtube: { title: "T", privacy: "public" } };
@@ -93,8 +92,8 @@ describe("the Posts these tests send", () => {
     expect(schemaErrors({ makeYourOwn: post }, schema("create_draft"))).toEqual([]);
   });
 
-  it("the For You changes fit edit_for_you_draft's whole live input schema", () => {
-    expect(schemaErrors({ draftId: A, changes: FOR_YOU_CHANGES }, schema("edit_for_you_draft"))).toEqual([]);
+  it("the For You Draft's changes fit edit_draft's whole live input schema", () => {
+    expect(schemaErrors({ draftId: A, composition: FOR_YOU_CHANGES }, schema("edit_draft"))).toEqual([]);
   });
 
   it.each([
@@ -121,8 +120,8 @@ function commandsByTool(): Map<string, CommandSpec[]> {
 }
 
 describe("the command table", () => {
-  it("pins exactly one command to each of the 42 tools", () => {
-    expect(SPEC_TOOLS).toHaveLength(42);
+  it("pins exactly one command to each of the 41 tools", () => {
+    expect(SPEC_TOOLS).toHaveLength(41);
     const byTool = commandsByTool();
     for (const tool of SPEC_TOOLS) {
       expect(byTool.get(tool), tool).toHaveLength(1);
@@ -130,7 +129,7 @@ describe("the command table", () => {
     expect([...byTool.keys()].sort()).toEqual([...SPEC_TOOLS].sort());
   });
 
-  it("knows the same 42 tools as the live list, with the live list's transport facts", () => {
+  it("knows the same 41 tools as the live list, with the live list's transport facts", () => {
     expect(Object.keys(TOOLS)).toEqual([...SPEC_TOOLS]);
     expect(TOOL_LISTING.tools.map((tool) => tool.name)).toEqual([...SPEC_TOOLS]);
     for (const listing of TOOL_LISTING.tools) {
@@ -164,7 +163,6 @@ describe("each command runs its one tool with the input its flags name", () => {
     await fake.start();
     files = await mkdtemp(join(tmpdir(), "topped-cli-files-"));
     await writeFile(join(files, "profile.json"), JSON.stringify({ name: "Nightowl", oneLiner: "Sleep better." }));
-    await writeFile(join(files, "changes.json"), JSON.stringify(FOR_YOU_CHANGES));
     await writeFile(join(files, "spec.json"), JSON.stringify({ fromSourcePost: { sourcePostId: A } }));
     await writeFile(join(files, "composition.json"), JSON.stringify(WALL_OF_TEXT));
     await writeFile(join(files, "own.json"), JSON.stringify({ makeYourOwn: OWN_SLIDESHOW }));
@@ -203,12 +201,6 @@ describe("each command runs its one tool with the input its flags name", () => {
       { connectionId: A, platform: "youtube", handle: null },
     ],
     ["for-you", ["for-you"], "get_for_you_draft", {}],
-    [
-      "for-you edit",
-      ["for-you", "edit", A, "--json", "changes.json"],
-      "edit_for_you_draft",
-      { draftId: A, changes: FOR_YOU_CHANGES },
-    ],
     ["pass", ["pass", A], "pass_draft", { draftId: A }],
     ["approve --save", ["approve", A, "--save"], "approve_draft", { draftId: A, exit: "save" }],
     [
@@ -436,6 +428,6 @@ describe("each command runs its one tool with the input its flags name", () => {
   it("topped tools lists the live tools", async () => {
     const result = await harness.run(["tools"], { env: env() });
     expect(result.code).toBe(0);
-    expect(result.json.tools).toHaveLength(42);
+    expect(result.json.tools).toHaveLength(41);
   });
 });

@@ -62,7 +62,7 @@ Signing up happens in the browser, at https://app.topped.ai; after that, everyth
 | Connected accounts | `list_connected_accounts` | `topped accounts [--post <postId>]` |
 | Connect or disconnect an account | `connect_account`, `disconnect_account` | `topped accounts connect <tiktok\|instagram\|youtube>`, `topped accounts disconnect <connectionId>` |
 | The current For You Draft | `get_for_you_draft` | `topped for-you` |
-| Change it | `edit_for_you_draft` | `topped for-you edit <draftId> --json <file\|->` |
+| Change it | `edit_draft` | `topped draft edit <draftId> --json <file\|->` |
 | Pass on it | `pass_draft` | `topped pass <draftId>` |
 | Approve any Draft | `approve_draft` | `topped approve <draftId> --save \| --post-now \| --schedule <iso>` |
 | Undo an approval | `undo_approve` | `topped undo <draftId>` |
@@ -86,7 +86,7 @@ Signing up happens in the browser, at https://app.topped.ai; after that, everyth
 1. `get_for_you_draft` / `topped for-you`.
 2. If `status` is `empty`, say why (`message`) and when more arrive (`moreArriveAt`), and offer to make a post instead (Shipped-it post).
 3. Otherwise show the Draft: its format, the Poster and slides or the video (`posterUrl`, `slides`, `url`), and **what it's based on** from `draft.basedOn`: its `line`, handle, platform, `url` and raw `count`. A `topped_idea` shows its `label`; `no_source_post` shows its `note`. If `stillRendering` is true, say the pictures are still being made.
-4. Ask: approve (Save, Post now or Schedule), change it, or pass. Changes: `edit_for_you_draft` with the Draft's `draftId` and `changes`, or new words from Topped's writer with `rewrite_draft` (`topped draft rewrite <draftId> --steer "shorter"`). Show the new version with `get_for_you_draft`.
+4. Ask: approve (Save, Post now or Schedule), change it, or pass. Changes: `edit_draft` with the Draft's `draftId` and its `draft.current`, changed, as `composition`, or new words from Topped's writer with `rewrite_draft` (`topped draft rewrite <draftId> --steer "shorter"`). Show the new version with `get_for_you_draft`.
 5. On the founder's word: `pass_draft` (`topped pass <draftId>`), or state the content save and approve:
    - MCP: `approve_draft { draftId, exit: "schedule", at, connectionIds, tiktok }`
    - CLI: `topped approve <draftId> --schedule 2026-10-02T18:30:00-04:00 --accounts <connectionId> --platform-json tiktok.json`
@@ -168,7 +168,7 @@ Signing up happens in the browser, at https://app.topped.ai; after that, everyth
 
 ## What you send
 
-Start from what Topped returned, change it, send it back. `get_for_you_draft` returns the Draft's words and look as `draft.current`, in the shape `edit_for_you_draft` takes as `changes`. `get_post` returns a Post as `post`, in the shape `edit_saved_post` takes (and `edit_draft` takes as `composition`, for a Draft you made). Fields you leave out stay as they are. Everything is named as the editor names it, never by pixels:
+Start from what Topped returned, change it, send it back. `get_for_you_draft` returns the For You Draft as `draft.current`, and `get_post` returns a Post as `post`: the whole Post, in the shape `edit_draft` takes as `composition` (any Draft) and `edit_saved_post` takes as `post`. A For You Draft keeps its `startingPoint` and Demo: send them back as read. Fields you leave out stay as they are. Everything is named as the editor names it, never by pixels:
 
 - **Style:** `behindTheWords` (`white`: a plate behind each line; `none`; `snapchat`: one band across the picture), `font` (one of the app's fonts, by name), `textColor` (`#FFFFFF`), `outline` (`color`, and `width`: `none`, `thin`, `medium`, `thick`), `background` (`color`, `opacity`; for `white` and `snapchat` only), `size` (`small`, `medium`, `large`), `position` (`top`, `middle`, `bottom`), `align` (`left`, `center`).
 - **A slide's photo:** `{ "mediaId" }` (a Library image), `{ "startingPointPhoto": N }` (photo N of the Starting point's set), or `{ "photoSetId", "photo": N }` (photo N of any set; `topped starting-points --format slideshow --photo-set <startingPointId>` shows them). On a Slideshow started on the founder's own image, `startingPointPhoto` is refused.
@@ -216,10 +216,11 @@ A Demo video with your Demo and a Sound from `list_sounds`:
   "sound": { "source": "topped", "trackId": "<trackId>" }, "volumes": { "sound": 0.6, "demoSound": 0 } } }
 ```
 
-New words on the current For You Draft's slides 1 and 3, keeping slide 2 (`edit_for_you_draft` `changes`; the file for `topped for-you edit <draftId> --json`). Send every slide you keep, in its order: a slide left out is removed.
+New words on the current For You Draft's slides 1 and 3, keeping slide 2 (`edit_draft` `composition`; the file for `topped draft edit <draftId> --json`), its `startingPoint` as `get_for_you_draft` read it. Send every slide you keep, in its order: a slide left out is removed.
 
 ```json
-{ "format": "slideshow", "slides": [ { "slide": 1, "words": "Your new opening line" }, { "slide": 2 }, { "slide": 3, "words": "Try it tonight" } ] }
+{ "format": "slideshow", "startingPoint": { "startingPointId": "<startingPointId>" },
+  "slides": [ { "slide": 1, "words": "Your new opening line" }, { "slide": 2 }, { "slide": 3, "words": "Try it tonight" } ] }
 ```
 
 ## TikTok, YouTube and Instagram
@@ -243,7 +244,7 @@ Fill every value from the founder's answers; the values above only show the shap
 - **Leave an optional input out rather than inventing it.** Never make up a cursor: pass back only the `nextCursor` a page returned. Use ids exactly as a result returned them.
 - **Time zone.** Days and times on the Calendar read in the zone the founder saved in Topped's Settings; `get_balances` (`topped balances`) shows it as `timeZone`. Leave `timeZone` out, over the CLI and MCP alike: never send this machine's zone or a guess. Send one (`--time-zone America/New_York`, or `timeZone` over MCP) only when the founder names another zone. If Topped refuses with `time_zone_required`, no zone is saved: ask the founder for theirs and send it.
 - **Times.** `at` is an ISO time with its offset, such as `2026-10-02T18:30:00-04:00`, within the next 30 days.
-- **Repeating a call.** `approve_draft`, `publish_saved_post`, `edit_saved_post`, `edit_for_you_draft`, `generate_media` and `retry_publish_run` take a `requestId`: the same id again returns the first result instead of acting twice. The CLI sends a fresh one per run and prints it as `requestId`; after exit 4, repeat with `--request-id <that id>`. Over MCP, send your own.
+- **Repeating a call.** `approve_draft`, `publish_saved_post`, `edit_saved_post`, `edit_draft`, `generate_media` and `retry_publish_run` take a `requestId`: the same id again returns the first result instead of acting twice. The CLI sends a fresh one per run and prints it as `requestId`; after exit 4, repeat with `--request-id <that id>`. Over MCP, send your own.
 - **Price first.** `generate_media` without `expectedCredits` (`topped generate image --prompt "..."`) makes nothing and returns the `price`. After the founder agrees, call again with the same choices and `expectedCredits` (`--expected-credits <price>`), under a new request id. A video finishes in the background: read it by its `mediaId` (above), never in a tight loop.
 - **Out of Credits or content saves, or at a plan limit.** The result says so plainly, and that plans live in Topped's Settings under Plan & usage. Buying happens only in the app, and the result carries no link to it; tell the founder what ran out and leave the choice to them.
 - **Undo and cancel.** `undo_approve` works for 5 minutes, while nothing has gone out, and returns the content save. After that, `cancel_publish_run` (`topped run cancel <runId> --slot <iso>`) stops a scheduled Post; it stays in the Library and no save comes back. `delete_saved_post` returns nothing either, and has no undo.

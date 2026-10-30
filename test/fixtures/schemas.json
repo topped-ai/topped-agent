@@ -1,7 +1,7 @@
 {
   "tools": [
     {
-      "name": "edit_for_you_draft",
+      "name": "edit_draft",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -9,7 +9,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "changes": {
+          "composition": {
             "oneOf": [
               {
                 "type": "object",
@@ -17,6 +17,9 @@
                   "format": {
                     "type": "string",
                     "const": "slideshow"
+                  },
+                  "startingPoint": {
+                    "$ref": "#/$defs/s1"
                   },
                   "slides": {
                     "minItems": 1,
@@ -37,17 +40,7 @@
                               "maxLength": 300
                             },
                             {
-                              "type": "object",
-                              "properties": {
-                                "remove": {
-                                  "type": "boolean",
-                                  "const": true
-                                }
-                              },
-                              "required": [
-                                "remove"
-                              ],
-                              "additionalProperties": false
+                              "$ref": "#/$defs/s2"
                             }
                           ]
                         },
@@ -102,7 +95,7 @@
                           ]
                         },
                         "style": {
-                          "$ref": "#/$defs/__schema8"
+                          "$ref": "#/$defs/s3"
                         },
                         "textBoxes": {
                           "maxItems": 4,
@@ -117,23 +110,13 @@
                                     "maxLength": 300
                                   },
                                   "style": {
-                                    "$ref": "#/$defs/__schema8"
+                                    "$ref": "#/$defs/s3"
                                   }
                                 },
                                 "additionalProperties": false
                               },
                               {
-                                "type": "object",
-                                "properties": {
-                                  "remove": {
-                                    "type": "boolean",
-                                    "const": true
-                                  }
-                                },
-                                "required": [
-                                  "remove"
-                                ],
-                                "additionalProperties": false
+                                "$ref": "#/$defs/s2"
                               }
                             ]
                           }
@@ -175,17 +158,7 @@
                                 "additionalProperties": false
                               },
                               {
-                                "type": "object",
-                                "properties": {
-                                  "remove": {
-                                    "type": "boolean",
-                                    "const": true
-                                  }
-                                },
-                                "required": [
-                                  "remove"
-                                ],
-                                "additionalProperties": false
+                                "$ref": "#/$defs/s2"
                               }
                             ]
                           }
@@ -196,10 +169,17 @@
                   },
                   "allTextBoxes": {
                     "type": "boolean"
+                  },
+                  "wordsFrom": {
+                    "$ref": "#/$defs/s4"
+                  },
+                  "sound": {
+                    "not": {}
                   }
                 },
                 "required": [
                   "format",
+                  "startingPoint",
                   "slides"
                 ],
                 "additionalProperties": false
@@ -211,25 +191,22 @@
                     "type": "string",
                     "const": "wall_of_text"
                   },
+                  "startingPoint": {
+                    "$ref": "#/$defs/s1"
+                  },
                   "text": {
-                    "type": "object",
-                    "properties": {
-                      "words": {
-                        "type": "string",
-                        "maxLength": 200
-                      },
-                      "style": {
-                        "$ref": "#/$defs/__schema8"
-                      }
-                    },
-                    "additionalProperties": false
+                    "$ref": "#/$defs/s5"
                   },
                   "sound": {
-                    "$ref": "#/$defs/__schema26"
+                    "$ref": "#/$defs/s6"
+                  },
+                  "wordsFrom": {
+                    "$ref": "#/$defs/s4"
                   }
                 },
                 "required": [
-                  "format"
+                  "format",
+                  "startingPoint"
                 ],
                 "additionalProperties": false
               },
@@ -240,18 +217,15 @@
                     "type": "string",
                     "const": "demo_video"
                   },
+                  "startingPoint": {
+                    "$ref": "#/$defs/s1"
+                  },
+                  "demoMediaId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
                   "openerText": {
-                    "type": "object",
-                    "properties": {
-                      "words": {
-                        "type": "string",
-                        "maxLength": 200
-                      },
-                      "style": {
-                        "$ref": "#/$defs/__schema8"
-                      }
-                    },
-                    "additionalProperties": false
+                    "$ref": "#/$defs/s5"
                   },
                   "trim": {
                     "type": "object",
@@ -288,11 +262,16 @@
                     "additionalProperties": false
                   },
                   "sound": {
-                    "$ref": "#/$defs/__schema26"
+                    "$ref": "#/$defs/s6"
+                  },
+                  "wordsFrom": {
+                    "$ref": "#/$defs/s4"
                   }
                 },
                 "required": [
-                  "format"
+                  "format",
+                  "startingPoint",
+                  "demoMediaId"
                 ],
                 "additionalProperties": false
               }
@@ -306,11 +285,54 @@
         },
         "required": [
           "draftId",
-          "changes"
+          "composition"
         ],
         "additionalProperties": false,
         "$defs": {
-          "__schema8": {
+          "s1": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "startingPointId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "startingPointId"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "mediaId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "mediaId"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "s2": {
+            "type": "object",
+            "properties": {
+              "remove": {
+                "type": "boolean",
+                "const": true
+              }
+            },
+            "required": [
+              "remove"
+            ],
+            "additionalProperties": false
+          },
+          "s3": {
             "type": "object",
             "properties": {
               "behindTheWords": {
@@ -402,7 +424,57 @@
             },
             "additionalProperties": false
           },
-          "__schema26": {
+          "s4": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "const": "agent"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "const": "writer"
+                  },
+                  "steer": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "mention": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "source"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "s5": {
+            "type": "object",
+            "properties": {
+              "words": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "style": {
+                "$ref": "#/$defs/s3"
+              }
+            },
+            "additionalProperties": false
+          },
+          "s6": {
             "oneOf": [
               {
                 "type": "object",

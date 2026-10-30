@@ -21,7 +21,6 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
   - `media --media-id <mediaId>` reads one item, or a video `generate` started. Topped refuses it beside `--kind`, `--cursor` or `--limit`; the CLI sends what it is given and passes that refusal through.
   - `starting-points --photo-set <startingPointId>` lists every photo of one set; `--source yours` lists the founder's own Library images or clips instead of Topped's.
   - `media delete` answers with an `undoToken`.
-  - `for-you edit` takes the `draftId` as an argument.
   - The confirmations Topped requires are flags: `accounts disconnect --platform --handle|--no-handle`, `watchlist unwatch|dismiss --handle`, `run move|retry --from-slot` and `run cancel --slot`. `accounts connect --reconnect <connectionId>` reconnects.
 - **Where the CLI departs from the spec by choice.** `media restore <mediaId> --undo-token <token>`, not the spec's positional `<undoToken>`: the token is a flag, like the other values Topped requires to confirm a change (`--from-slot`, `--slot`, `--handle`).
 - **What the CLI adds to Topped's answers:**
@@ -36,7 +35,7 @@ Why `topped` works the way it does. The CLI and the skill are the public half of
   - 2: bad usage.
   - 3: not signed in, or the sign-in was revoked.
   - 4: Topped could not be reached.
-- **What a Post looks like travels as JSON.** `draft create`, `draft edit`, `for-you edit` and `saved edit` take the Post in the editor's own names (`startingPoint`, `behindTheWords`, `images`, `allTextBoxes`, `volumes`) through `--json`, unchanged. The CLI has no flag for any of them, so a renamed field needs no new CLI.
+- **What a Post looks like travels as JSON.** `draft create`, `draft edit` and `saved edit` take the Post in the editor's own names (`startingPoint`, `behindTheWords`, `images`, `allTextBoxes`, `volumes`) through `--json`, unchanged. The CLI has no flag for any of them, so a renamed field needs no new CLI.
 - **No time zone unless one is named.** `runs`, `run move` and `run retry` send `timeZone` only from `--time-zone` or the `--json` input. Left out, Topped reads days and times in the zone the founder saved in Settings, which `topped balances` shows. The machine running `topped` is often a cloud sandbox or CI set to UTC, so its zone says nothing about the founder's. With no zone saved, Topped's `time_zone_required` refusal passes through, and the agent asks the founder.
 - **A clip's length goes with `upload_media` begin.** Begin refuses a clip or Demo without it, and finish ignores it. `topped upload` reads it from the MP4 or MOV header (or `--duration`) and sends it before any byte moves, so Topped refuses a clip over 30 seconds before the upload. `--poster` fills begin's second slot: a clip's cover frame, or an image's thumbnail.
 - **A For You Draft's words are rewritten only when it was made from a Template:** Topped's writer rewrites through the Template's slots. Every Draft Topped deals comes off its shelf of Templates. The CLI passes any refusal through unchanged.

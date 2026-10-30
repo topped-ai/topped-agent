@@ -140,7 +140,7 @@ Two meters, never confused. **Credits** pay for Playground images and videos (`t
 
 ## Safe to repeat
 
-Commands that spend or publish (`approve`, `saved publish`, `saved edit`, `for-you edit`, `generate`, `run retry`) carry a request id: a fresh one per run, echoed in the output as `requestId`. Pass the same `--request-id <id>` again and Topped returns the first result instead of acting twice. The CLI retries network failures and Topped outages on its own, a few times with backoff, and never a refusal. A command gets up to five minutes, as long as Topped lets one call run. When a command with a request id loses its answer on the way back, the CLI asks again under the same id until the first result comes back. After exit 4, do what `fix` says: for a command with a request id, run it again with that `--request-id`; a plain rerun gets a fresh id and could act twice.
+Commands that spend or publish (`approve`, `saved publish`, `saved edit`, `draft edit`, `generate`, `run retry`) carry a request id: a fresh one per run, echoed in the output as `requestId`. Pass the same `--request-id <id>` again and Topped returns the first result instead of acting twice. The CLI retries network failures and Topped outages on its own, a few times with backoff, and never a refusal. A command gets up to five minutes, as long as Topped lets one call run. When a command with a request id loses its answer on the way back, the CLI asks again under the same id until the first result comes back. After exit 4, do what `fix` says: for a command with a request id, run it again with that `--request-id`; a plain rerun gets a fresh id and could act twice.
 
 Commands that read days and times (`runs`, `run move`, `run retry`) read them in the time zone the founder saved in Topped's Settings, never this machine's; `topped balances` shows it. `--time-zone <IANA zone>` names another, only when the founder asks for one. With no zone saved, Topped refuses with `time_zone_required`: ask the founder for theirs and pass it with `--time-zone`.
 
@@ -172,7 +172,6 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | Command | Tool | What it does |
 |---|---|---|
 | `topped for-you` | `get_for_you_draft` | The current For You Draft, with its Based on and every slide or the video. |
-| `topped for-you edit <draftId> --json <file\|->` | `edit_for_you_draft` | Change the current For You Draft's words, text boxes, looks, images, photos, Sound, trim or volumes. |
 | `topped pass <draftId>` | `pass_draft` | Pass on the current For You Draft. Free, and final. |
 | `topped approve <draftId> --save \| --post-now --accounts <a,b> \| --schedule <iso> --accounts <a,b> [--caption <text>] [--platform-json <file\|->]` | `approve_draft` | Approve a Draft: Save it, Post it now or Schedule it. Spends one content save. |
 | `topped undo <draftId>` | `undo_approve` | Undo an approval within 5 minutes, while nothing has gone out; the content save comes back. |
@@ -185,7 +184,7 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | `topped starting-points --format <slideshow\|wall_of_text\|demo_video> [--source <topped\|yours>] [--tag <tag>] [--photo-set <startingPointId>] [--cursor <cursor>]` | `list_starting_points` | Starting points for a Format: Topped's photo sets, backgrounds or openers, or with --source yours, your Library images or clips. |
 | `topped sounds [--cursor <cursor>]` | `list_sounds` | Topped's sounds and the founder's own. |
 | `topped draft create --json <file\|->` | `create_draft` | Make a Creator Draft from a source post, or your own. Free. |
-| `topped draft edit <draftId> --json <file\|->` | `edit_draft` | Change a Draft you made: send the whole Post. Free. |
+| `topped draft edit <draftId> --json <file\|->` | `edit_draft` | Change a Draft - one you made, or the current For You Draft: send the whole Post. Free. |
 | `topped draft rewrite <draftId> [--steer <text>] [--mention \| --no-mention] [--previous-idea <ideaId>]` | `rewrite_draft` | Topped's writer rewrites a Draft's words. Free. |
 | `topped caption --format <slideshow\|video> [--avoid <text>] [--platforms <a,b>] [--attempt <n>]` | `draft_caption` | Topped writes a caption for a Post. Plus and Pro. |
 | `topped generate <image\|video> --prompt <text> [--expected-credits <n>] [--model <model>] [--length <seconds>] [--starting-image <mediaId>]` | `generate_media` | A Playground image or video. Spends credits: without --expected-credits, nothing is made and the price comes back. A video finishes in the background: topped media --media-id <mediaId>. |

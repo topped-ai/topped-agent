@@ -1,6 +1,16 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 (2026-10-30)
+
+Brought in line with the 41 tools Topped lists today.
+
+### Upgrade from 0.2.0
+
+- Today's Topped refuses 0.2.0's `topped for-you edit` and the skill's `edit_for_you_draft` (an unknown tool). Update the CLI and the skill together.
+
+### Changed
+
+- `topped for-you edit` is gone: Topped folded `edit_for_you_draft` into `edit_draft`, which changes any Draft. Change the For You Draft with `topped draft edit <draftId> --json <file|->`, sending `get_for_you_draft`'s `draft.current` back with your changes; its `startingPoint` and Demo stay as read. `draft edit` now carries a request id.
 
 ### Set up
 

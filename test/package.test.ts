@@ -45,7 +45,7 @@ const TEXT_FILES = [
 describe("the package", () => {
   it("is topped, with its bin, engines and only what ships", () => {
     expect(pkg.name).toBe("topped");
-    expect(pkg.version).toBe("0.2.0");
+    expect(pkg.version).toBe("0.3.0");
     expect(pkg.type).toBe("module");
     expect(pkg.bin).toEqual({ topped: "dist/cli.js" });
     expect(pkg.engines).toEqual({ node: ">=20" });

@@ -22,7 +22,7 @@ auth:
   # The browser opens on the first probe or first connect.
 
 # Tool selection at install time:
-# Topped lists 42 tools (the founder's Product, For You, Creator, Library,
+# Topped lists 41 tools (the founder's Product, For You, Creator, Library,
 # Calendar, Scoreboard and Watchlist). `default_enabled` stays unset, so the
 # install-time checklist starts with every tool checked and users prune what
 # they don't want.

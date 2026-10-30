@@ -33,7 +33,7 @@ describe("the tool fixtures", () => {
   const listed = new Map(TOOL_LISTING.tools.map((tool) => [tool.name, tool.inputSchema as Schema]));
 
   it("hold whole schemas for the tools the skill shows nested JSON for", () => {
-    expect([...LIVE_INPUT_SCHEMAS.keys()].sort()).toEqual(["approve_draft", "create_draft", "edit_for_you_draft"]);
+    expect([...LIVE_INPUT_SCHEMAS.keys()].sort()).toEqual(["approve_draft", "create_draft", "edit_draft"]);
   });
 
   for (const [name, schema] of LIVE_INPUT_SCHEMAS) {

@@ -17,7 +17,7 @@ const read: ToolFacts = { changes: false };
 const change: ToolFacts = { changes: true };
 const spend: ToolFacts = { changes: true, requestId: true };
 
-/** The 42 tools, in the order Topped lists them. */
+/** The 41 tools, in the order Topped lists them. */
 export const TOOLS: Readonly<Record<string, ToolFacts>> = {
   // Account
   get_balances: read,
@@ -28,7 +28,6 @@ export const TOOLS: Readonly<Record<string, ToolFacts>> = {
   disconnect_account: change,
   // For You
   get_for_you_draft: read,
-  edit_for_you_draft: spend,
   pass_draft: change,
   approve_draft: spend,
   undo_approve: change,
@@ -37,7 +36,7 @@ export const TOOLS: Readonly<Record<string, ToolFacts>> = {
   list_starting_points: read,
   list_sounds: read,
   create_draft: change,
-  edit_draft: change,
+  edit_draft: spend,
   rewrite_draft: change,
   draft_caption: read,
   generate_media: spend,

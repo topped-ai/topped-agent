@@ -207,13 +207,13 @@ describe("the skill on repeating a call", () => {
 function exampleInput(block: Record<string, unknown>): [string, Record<string, unknown>] {
   if ("fromSourcePost" in block || "makeYourOwn" in block) return ["create_draft", block];
   if ("tiktok" in block || "youtube" in block) return ["approve_draft", { draftId: "<draftId>", exit: "post_now", ...block }];
-  if ("format" in block) return ["edit_for_you_draft", { draftId: "<draftId>", changes: block }];
+  if ("format" in block) return ["edit_draft", { draftId: "<draftId>", composition: block }];
   throw new Error(`No tool takes this example: ${JSON.stringify(block)}`);
 }
 
 describe("what the skill names is real", () => {
-  it("names every one of the 42 tools, and no tool that doesn't exist", () => {
-    expect(TOOLS.size).toBe(42);
+  it("names every one of the 41 tools, and no tool that doesn't exist", () => {
+    expect(TOOLS.size).toBe(41);
     const named = new Set(
       codeTexts()
         .flatMap((code) => code.match(/\b[a-z]+(?:_[a-z]+)+\b/g) ?? [])

@@ -69,7 +69,7 @@ describe("the output contract", () => {
 
   it("--version", async () => {
     const result = await harness.run(["--version"]);
-    expect(result.json).toEqual({ name: "topped", version: "0.2.0" });
+    expect(result.json).toEqual({ name: "topped", version: "0.3.0" });
   });
 
   it("one line by default, indented with --pretty, and nothing on stderr", async () => {
@@ -148,7 +148,7 @@ describe("the output contract", () => {
     [["runs", "--week", "W40"], "ISO week"],
     [["media", "demo", A], "--on | --off"],
     [["accounts", "disconnect", A, "--platform", "tiktok"], "--no-handle"],
-    [["for-you", "edit", A], "--json"],
+    [["draft", "edit", A], "--json"],
     [["balances", "--time-zone", "Europe/Paris"], "takes no time zone"],
     [["balances", "--request-id", "x"], "takes no request id"],
     [["--time-zone", "UTC", "balances"], "takes no time zone"],
