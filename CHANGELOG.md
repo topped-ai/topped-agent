@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- `get_post` and `get_for_you_draft` (`topped post`, `topped for-you`) group a Post's picture and video URLs under `media` (`posterUrl`, `slides`, `videoUrl`); a For You video's length is `draft.seconds`. Over MCP, a chat that draws Topped's Post card gets `media` as a note (the card shows the Post), and so does a client on the older MCP revision, which can't say whether it draws one; `topped post <postId>` always prints the URLs.
+
 ## 0.3.0 (2026-10-30)
 
 Brought in line with the 41 tools Topped lists today.
