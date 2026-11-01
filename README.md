@@ -262,7 +262,7 @@ topped runs --week 2026-W40
 topped scoreboard posts --accounts <connectionId>          # each Post's own counts, newest first
 ```
 
-TikTok posts need every posting choice the founder made (privacy, comments, Duet, Stitch, music, disclosure, the AI-generated label) in `--platform-json`, or "send to TikTok drafts". YouTube needs a privacy there; its title defaults to the caption's first line. `topped accounts --post <postId>` lists what each account allows.
+A TikTok or YouTube posting choice left out of `--platform-json` takes the default Topped's own Scheduler starts on: TikTok posts to Everyone when the account offers it, with comments on unless the account has them off, Duet and Stitch off, music added to a slideshow, no commercial disclosure and the AI-generated label on; YouTube posts public with the AI-generated label on, titled with the caption's first line. Put in only what the founder changes, or "send to TikTok drafts"; a TikTok account without Everyone needs its `privacy` stated. `topped accounts --post <postId>` lists what each account allows.
 
 What changed between versions: [CHANGELOG.md](CHANGELOG.md).
 

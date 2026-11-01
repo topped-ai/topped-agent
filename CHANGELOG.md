@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 (2026-11-01)
+
+### Changed
+
+- Posting no longer asks the founder each TikTok and YouTube choice. A choice left out of `tiktok` or `youtube` (`--platform-json`) takes the default Topped's own Scheduler starts on: TikTok posts to Everyone when the account offers it, with comments on unless the account has them off, Duet and Stitch off, music added to a slideshow, no commercial disclosure and the AI-generated label on; YouTube posts public with the AI-generated label on. The skill tells the agent to say those choices to the founder in one line before posting. A TikTok account without Everyone still needs its `privacy` stated.
+
 ## 0.3.1 (2026-11-01)
 
 ### Changed

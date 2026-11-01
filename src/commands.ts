@@ -105,7 +105,7 @@ const platformJson: FlagSpec = {
   name: "platform-json",
   kind: "string",
   value: "<file|->",
-  help: 'A JSON file with the platform settings: { "tiktok": [...], "youtube": {...} }. TikTok needs every choice as the founder made it; YouTube needs a privacy, and its title defaults to the caption\'s first line.',
+  help: 'A JSON file with the platform settings: { "tiktok": [...], "youtube": {...} }. Only what the founder changes: each choice left out takes Topped\'s own default, and a YouTube title defaults to the caption\'s first line.',
 };
 const format: FlagSpec = {
   name: "format",

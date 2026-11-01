@@ -584,9 +584,6 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "privacy"
-            ],
             "additionalProperties": false
           },
           "tiktok": {
