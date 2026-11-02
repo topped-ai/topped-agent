@@ -186,7 +186,7 @@ Each command runs one Topped tool. Arguments and flags become the tool's input; 
 | `topped draft create --json <file\|->` | `create_draft` | Make a Creator Draft from a source post, or your own. Free. |
 | `topped draft edit <draftId> --json <file\|->` | `edit_draft` | Change a Draft - one you made, or the current For You Draft: send the whole Post. Free. |
 | `topped draft rewrite <draftId> [--steer <text>] [--mention \| --no-mention] [--previous-idea <ideaId>]` | `rewrite_draft` | Topped's writer rewrites a Draft's words. Free. |
-| `topped caption --format <slideshow\|video> [--avoid <text>] [--platforms <a,b>] [--attempt <n>]` | `draft_caption` | Topped writes a caption for a Post. Plus and Pro. |
+| `topped caption <postId> [--avoid <text>] [--platforms <a,b>]` | `draft_caption` | Topped writes the caption for one Post, from what it says and the caption of the post it copies. Plus and Pro. |
 | `topped generate <image\|video> --prompt <text> [--expected-credits <n>] [--model <model>] [--length <seconds>] [--starting-image <mediaId>]` | `generate_media` | A Playground image or video. Spends credits: without --expected-credits, nothing is made and the price comes back. A video finishes in the background: topped media --media-id <mediaId>. |
 
 ### Library

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.3 (2026-11-02)
+
+### Changed
+
+- `topped caption <postId>` (`draft_caption`) writes the caption for one Post, from that Post's on-screen words and the caption of the post it copies, in that caption's shape. It takes the Post's id instead of `--format`, and `--attempt` is gone: "write a different one" is `--avoid` with the caption you have. An older CLI's `topped caption --format …` is refused.
+
 ## 0.3.2 (2026-11-01)
 
 ### Changed

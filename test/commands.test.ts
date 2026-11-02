@@ -273,9 +273,9 @@ describe("each command runs its one tool with the input its flags name", () => {
     ],
     [
       "caption",
-      ["caption", "--format", "video", "--avoid", "Old one", "--platforms", "tiktok,youtube", "--attempt", "2"],
+      ["caption", A, "--avoid", "Old one", "--platforms", "tiktok,youtube"],
       "draft_caption",
-      { format: "video", avoid: "Old one", platforms: ["tiktok", "youtube"], attempt: 2 },
+      { postId: A, avoid: "Old one", platforms: ["tiktok", "youtube"] },
     ],
     ["generate image", ["generate", "image", "--prompt", "a cat"], "generate_media", { kind: "image", prompt: "a cat" }],
     [

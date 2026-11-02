@@ -348,7 +348,7 @@
       "inputSchema": {
         "type": "object",
         "properties": {
-          "format": {
+          "postId": {
             "type": "string"
           },
           "platforms": {
@@ -356,13 +356,10 @@
           },
           "avoid": {
             "type": "string"
-          },
-          "attempt": {
-            "type": "integer"
           }
         },
         "required": [
-          "format"
+          "postId"
         ]
       }
     },

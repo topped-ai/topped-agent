@@ -68,7 +68,7 @@ Signing up happens in the browser, at https://app.topped.ai; after that, everyth
 | Undo an approval | `undo_approve` | `topped undo <draftId>` |
 | Source posts, Starting points, Sounds | `list_source_posts`, `list_starting_points`, `list_sounds` | `topped sources`, `topped starting-points`, `topped sounds` |
 | Make, change, reword a Draft | `create_draft`, `edit_draft`, `rewrite_draft` | `topped draft create`, `topped draft edit`, `topped draft rewrite` |
-| A caption (Plus and Pro) | `draft_caption` | `topped caption --format <slideshow\|video>` |
+| A caption (Plus and Pro) | `draft_caption` | `topped caption <postId>` |
 | A Playground image or video | `generate_media` | `topped generate <image\|video> --prompt <text>` |
 | The Library | `list_saved_posts`, `get_post`, `list_media` | `topped saved`, `topped post <postId>`, `topped media` |
 | Post a Saved Post again | `publish_saved_post` | `topped saved publish <postId>` |

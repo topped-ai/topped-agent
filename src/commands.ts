@@ -370,14 +370,12 @@ export const COMMANDS: readonly CommandSpec[] = [
   {
     words: ["caption"],
     tool: "draft_caption",
-    usage: "topped caption --format <slideshow|video> [--avoid <text>] [--platforms <a,b>] [--attempt <n>]",
-    summary: "Topped writes a caption for a Post. Plus and Pro.",
-    args: [],
+    usage: "topped caption <postId> [--avoid <text>] [--platforms <a,b>]",
+    summary: "Topped writes the caption for one Post, from what it says and the caption of the post it copies. Plus and Pro.",
+    args: [postId],
     flags: [
-      { name: "format", kind: "string", field: "format", value: "<slideshow|video>", required: true, help: "slideshow, or video for Wall of text and Demo video." },
       { name: "avoid", kind: "string", field: "avoid", value: "<text>", help: "A caption you already have; Topped writes a different one." },
       { name: "platforms", kind: "list", field: "platforms", value: "<a,b>", help: "Where the Post will go." },
-      { name: "attempt", kind: "int", field: "attempt", value: "<n>", help: "1, 2, 3... for a fresh angle each time." },
     ],
   },
   {
