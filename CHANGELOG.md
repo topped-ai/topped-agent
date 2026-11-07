@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- The skill's description names what it is for in the words founders search with - organic TikTok app marketing, "market my app on TikTok" - so skill registries list it for those searches.
+
 ## 0.3.3 (2026-11-02)
 
 ### Changed
